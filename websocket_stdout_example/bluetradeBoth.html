@@ -1,0 +1,35 @@
+<html>
+<head>
+      <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+      <script type="text/javascript">
+         window.onload = function() {
+
+            window.webSocket1 = new WebSocket("ws://ec2-52-91-187-205.compute-1.amazonaws.com:9000");
+
+            window.webSocket1.onmessage = function(e) {
+               console.log("Got echo: " + e.data);
+                $("#output1").append(e.data);
+            }
+			
+			 window.webSocket2 = new WebSocket("ws://ec2-52-91-187-205.compute-1.amazonaws.com:9001");
+
+            window.webSocket2.onmessage = function(e) {
+               console.log("Got echo: " + e.data);
+                $("#output2").append(e.data);
+            }
+         }
+      </script>
+     
+   </head>
+<body>
+<div width="100%" height="50%">
+ <pre id="output1">
+</pre>
+</div>
+<div><hr/></div>
+<div width="100%" height="50%">
+ <pre id="output2">
+</pre>
+</div>
+</body>
+</html>

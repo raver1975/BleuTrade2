@@ -1,0 +1,19 @@
+<html>
+   <head>
+      <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+      <script type="text/javascript">
+         window.onload = function() {
+
+            window.webSocket = new WebSocket("ws://ec2-52-91-187-205.compute-1.amazonaws.com:9001");
+
+            window.webSocket.onmessage = function(e) {
+               console.log("Got echo: " + e.data);
+                $("#output").append(e.data);
+            }
+         }
+      </script>
+   </head>
+   <body>
+      <pre id="output"></pre>
+   </body>
+</html>
