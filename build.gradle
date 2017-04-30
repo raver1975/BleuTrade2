@@ -41,7 +41,12 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 }
 
-task compileCustomJar(type: OneJar) {
+task compileDataCollectorJar(type: OneJar) {
     mainClass = 'com.klemstinegroup.bleutrade.DataCollector'
     archiveName = 'DataCollector.jar'
+}
+
+task compilePredictorVisualizerJar(type: OneJar) {
+    mainClass = 'com.klemstinegroup.bleutrade.WSClient'
+    archiveName = 'wsclient.jar'
 }

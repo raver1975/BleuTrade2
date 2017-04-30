@@ -217,16 +217,17 @@ public class MultiTimestepRegressionExampleoLD {
         //Convert raw string data to IndArrays for plotting
         INDArray trainArray = createIndArrayFromStringList(rawStrings, 0, trainSize);
         INDArray testArray = createIndArrayFromStringList(rawStrings, trainSize, testSize);
+        INDArray fullArray = createIndArrayFromStringList(rawStrings, 0, trainSize+testSize);
 
         //Create plot with out data
         XYSeriesCollection c = new XYSeriesCollection();
-        createSeries(c, trainArray, 0, "Train data");
-        createSeries(c, testArray, trainSize - 1, "Actual test data");
-        createSeries(c, predicted, trainSize - 1, "Predicted test data");
+        createSeries(c, fullArray, 0, "data");
+//        createSeries(c, testArray, trainSize - 1, "Actual test data");
+        createSeries(c, predicted, trainSize - 1, "Predicted data");
         createSeries(c, predicted1, trainSize +testSize - 1
-                , "Predicted1 future data");
+                , "Predicted future data");
         createSeries(c, predicted2, trainSize + 2*testSize - 1
-                , "Predicted2 future data");
+                , "Predicted future data");
 
         plotDataset(c);
 
