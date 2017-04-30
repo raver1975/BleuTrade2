@@ -26,18 +26,21 @@ public class WSClient {
                 String out = (Double.parseDouble(bb[1]) * 100000) + "," + (Double.parseDouble(bb[2]) * 100000);
                 System.out.println(messageCount+"\t"+out);
                 messageCount++;
+                File file = new File("./rnnRegression/passengers_raw.csv");
                 try {
+                    fileWriter = new FileWriter(file,true);
                     fileWriter.write(out + "\n");
-                    fileWriter.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    fileWriter.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
+
             }
 
         }
         if (!firstRun) {
             try {
-                MultiTimestepRegressionExample.main(new String[]{});
+                new MultiTimestepRegressionExampleoLD();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -58,8 +61,9 @@ public class WSClient {
         File file = new File("./rnnRegression/passengers_raw.csv");
         try {
             fileWriter = new FileWriter(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+            fileWriter.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
         new Thread(new Runnable() {
             @Override
@@ -72,7 +76,7 @@ public class WSClient {
                 System.out.println("firstrun");
                 firstRun=false;
                 try {
-                    MultiTimestepRegressionExample.main(new String[]{});
+                    new MultiTimestepRegressionExampleoLD();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
