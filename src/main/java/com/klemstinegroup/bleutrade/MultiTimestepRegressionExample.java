@@ -18,6 +18,7 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
@@ -318,30 +319,18 @@ public class MultiTimestepRegressionExample {
         // get a reference to the plot for further customisation...
         final XYPlot plot = chart.getXYPlot();
         plot.getDomainAxis().setAutoRange(true);
-        plot.getDomainAxis().setRange(rawStrings.size()-100,rawStrings.size());
+        plot.getDomainAxis().setRange(rawStrings.size()-150,rawStrings.size());
 
-        // Auto zoom to fit time series in initial window
+        // Auto zoom to fit time series in initial window`
         final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(true);
         rangeAxis.setAutoRangeIncludesZero(false);
-
-        JPanel panel = new ChartPanel(chart);
-
-        JFrame f = new JFrame(new Date().toString());
-       //f.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
-        f.add(panel);
-        f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        f.setSize(1920,1080);
-//        f.setTitle("Training Data");
-
-        RefineryUtilities.centerFrameOnScreen(f);
-        f.setVisible(true);
-        BufferedImage image = ComponentImageCapture.getScreenShot(panel);
         try {
-            ImageIO.write(image,"png",new File("image"+(cnter++)+".png"));
+            ChartUtilities.saveChartAsPNG(new File("image"+(cnter++)+".png"),chart,1920,1080);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     /**
