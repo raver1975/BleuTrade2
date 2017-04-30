@@ -11,24 +11,22 @@ public class WSClient {
 
     private static FileWriter fileWriter;
     private int messageCount = 0;
+    private static boolean firstRun=true;
 
 
     private static Object waitLock = new Object();
 
     @OnMessage
-    public void onMessage(String message) {
+    public synchronized void onMessage(String message) {
 //the new USD rate arrives from the websocket server side.
         String[] parsed = message.split("\n");
         for (String s : parsed) {
-            System.out.println((messageCount) + ":" + s);
             if (fileWriter != null) {
-
-
                 String[] bb = s.split(",");
-                String out = (Double.parseDouble(bb[1]) * 10000) + "," + (Double.parseDouble(bb[2]) * 10000);
+                String out = (Double.parseDouble(bb[1]) * 100000) + "," + (Double.parseDouble(bb[2]) * 100000);
+                System.out.println(messageCount+"\t"+out);
                 messageCount++;
                 try {
-                    System.out.println(out);
                     fileWriter.write(out + "\n");
                     fileWriter.flush();
                 } catch (IOException e) {
@@ -37,6 +35,14 @@ public class WSClient {
             }
 
         }
+        if (!firstRun) {
+            try {
+                MultiTimestepRegressionExample.main(new String[]{});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private static void wait4TerminateSignal() {
@@ -55,6 +61,25 @@ public class WSClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("firstrun");
+                firstRun=false;
+                try {
+                    MultiTimestepRegressionExample.main(new String[]{});
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
         WebSocketContainer container = null;//
         Session session = null;
         try {
@@ -75,5 +100,6 @@ public class WSClient {
                 }
             }
         }
+
     }
 }

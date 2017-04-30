@@ -43,6 +43,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -55,11 +57,12 @@ import java.util.List;
 
 public class MultiTimestepRegressionExample {
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiTimestepRegressionExample.class);
-    private static int trainSize=10;
-    private static int testSize=40;
-    private static int numberOfTimesteps=40;
-    static int miniBatchSize = 10;
+    private static int trainSize = 10;
+    private static int testSize = 20;
+    private static int numberOfTimesteps = 20;
+    static int miniBatchSize = 20;
     static int nEpochs = 50;
+    private static List<String> rawStrings;
     //Make sure miniBatchSize is divisable by trainSize and testSize,
     //as rnnTimeStep will not accept different sized examples
 
@@ -91,8 +94,7 @@ public class MultiTimestepRegressionExample {
 
 
         //Prepare multi time step data, see method comments for more info
-        List<String> rawStrings = prepareTrainAndTest();
-
+        rawStrings = prepareTrainAndTest();
 
 
         // ----- Load the training data -----
@@ -125,18 +127,18 @@ public class MultiTimestepRegressionExample {
 
         // ----- Configure the network -----
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-            .seed(140)
-            .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .iterations(1)
-            .weightInit(WeightInit.XAVIER)
-            .updater(Updater.NESTEROVS).momentum(0.9)
-            .learningRate(0.15)
-            .list()
-            .layer(0, new GravesLSTM.Builder().activation(Activation.TANH).nIn(numOfVariables).nOut(10)
-                .build())
-            .layer(1, new RnnOutputLayer.Builder(LossFunctions.LossFunction.MSE)
-                .activation(Activation.IDENTITY).nIn(10).nOut(numOfVariables).build())
-            .build();
+                .seed(140)
+                .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+                .iterations(1)
+                .weightInit(WeightInit.XAVIER)
+                .updater(Updater.NESTEROVS).momentum(0.9)
+                .learningRate(0.15)
+                .list()
+                .layer(0, new GravesLSTM.Builder().activation(Activation.TANH).nIn(numOfVariables).nOut(10)
+                        .build())
+                .layer(1, new RnnOutputLayer.Builder(LossFunctions.LossFunction.MSE)
+                        .activation(Activation.IDENTITY).nIn(10).nOut(numOfVariables).build())
+                .build();
 
         MultiLayerNetwork net = new MultiLayerNetwork(conf);
         net.init();
@@ -187,17 +189,37 @@ public class MultiTimestepRegressionExample {
 //        INDArray predicted1 = predicted.tensorAlongDimension(predicted.size(2)-1,1,0);	//Gets the last time step output
 
 
-
-
-            INDArray predicted1 = net.rnnTimeStep(predicted);	//Do one time step of forward pass
+        INDArray predicted1 = net.rnnTimeStep(predicted);    //Do one time step of forward pass
 //            INDArray predicted2=predicted1.dup();
 
         normalizer.revertLabels(predicted);
         normalizer.revertLabels(predicted1);
 //            predicted2= predicted2.tensorAlongDimension(predicted2.size(1)-1,1,0);	//Gets the last time step output
-            System.out.println(predicted1.toString());
+        //System.out.println(predicted1.toString());
 
+        ArrayList<Double> ask = new ArrayList<>();
+        ArrayList<Double> bid = new ArrayList<>();
+        ArrayList<AskBid> askbid = new ArrayList<>();
+        trainDataIter.reset();
+        for (String s : rawStrings) {
+            System.out.println(s);
+            String[] gg = s.split(",");
+            ask.add(Double.parseDouble(gg[1]));
+            bid.add(Double.parseDouble(gg[0]));
+            askbid.add(new AskBid(Double.parseDouble(gg[1]),Double.parseDouble(gg[0])));
+        }
+        System.out.println("predicted size=" + predicted1.size(0));
+        System.out.println(predicted1);
+        int nRows = predicted1.shape()[2];
+        for (int i = 0; i <nRows; i++) {
+            askbid.add(new AskBid(predicted1.slice(0).slice(1).getDouble(i),predicted1.slice(0).slice(0).getDouble(i)));
+        }
 
+        int ducnt = 0;
+        System.out.println("-----------------------------------------------------------------");
+        for (AskBid ab:askbid) {
+            System.out.println((ducnt++) + "\t" + ab);
+        }
 
 
         //Convert raw string data to IndArrays for plotting
@@ -209,7 +231,7 @@ public class MultiTimestepRegressionExample {
         createSeries(c, trainArray, 0, "Train data");
         createSeries(c, testArray, trainSize - 1, "Actual test data");
         createSeries(c, predicted, trainSize - 1, "Predicted test data");
-        createSeries(c, predicted1, trainSize +testSize- 1, "Predicted futue data");
+        createSeries(c, predicted1, trainSize + testSize - 2, "Predicted futue data");
 
         plotDataset(c);
 
@@ -264,7 +286,7 @@ public class MultiTimestepRegressionExample {
 
         String title = "Regression example";
         String xAxisLabel = "Timestep";
-        String yAxisLabel = "Number of passengers";
+        String yAxisLabel = "Coin Price";
         PlotOrientation orientation = PlotOrientation.VERTICAL;
         boolean legend = true;
         boolean tooltips = false;
@@ -273,18 +295,18 @@ public class MultiTimestepRegressionExample {
 
         // get a reference to the plot for further customisation...
         final XYPlot plot = chart.getXYPlot();
-
+        plot.getDomainAxis().setAutoRange(true);
         // Auto zoom to fit time series in initial window
         final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(true);
 
         JPanel panel = new ChartPanel(chart);
 
-        JFrame f = new JFrame();
+        JFrame f = new JFrame(new Date().toString());
         f.add(panel);
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         f.pack();
-        f.setTitle("Training Data");
+//        f.setTitle("Training Data");
 
         RefineryUtilities.centerFrameOnScreen(f);
         f.setVisible(true);
@@ -298,13 +320,14 @@ public class MultiTimestepRegressionExample {
      * @return
      * @throws IOException
      */
-    private static List<String> prepareTrainAndTest( ) throws IOException {
+    private static List<String> prepareTrainAndTest() throws IOException {
         Path rawPath = Paths.get(baseDir.getAbsolutePath() + "/passengers_raw.csv");
 
         List<String> rawStrings = Files.readAllLines(rawPath, Charset.defaultCharset());
 //        testSize=40;
 //        numberOfTimesteps=40;
-        trainSize=10*(int)((rawStrings.size()-testSize-numberOfTimesteps)/10);
+        trainSize = 10 * (int) ((rawStrings.size() - testSize - numberOfTimesteps) / 10);
+        System.out.println("training size=" + trainSize);
 
         setNumOfVariables(rawStrings);
 
@@ -340,4 +363,6 @@ public class MultiTimestepRegressionExample {
     private static void setNumOfVariables(List<String> rawStrings) {
         numOfVariables = rawStrings.get(0).split(",").length;
     }
+
+
 }
