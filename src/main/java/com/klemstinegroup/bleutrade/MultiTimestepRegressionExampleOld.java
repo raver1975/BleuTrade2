@@ -14,7 +14,6 @@ import org.deeplearning4j.nn.conf.layers.GravesLSTM;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
-import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -51,15 +50,15 @@ import java.util.List;
  * It demonstrates multi time step regression using LSTM
  */
 
-public class MultiTimestepRegressionExampleoLD {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MultiTimestepRegressionExampleoLD.class);
-    private  int trainSize = 10;
-    private  int testSize = 50;
-    private  int numberOfTimesteps = 50;
-     int miniBatchSize = 50;
-     int nEpochs = 200;
-    private  List<String> rawStrings;
-    private static  int cnter=0;
+public class MultiTimestepRegressionExampleOld {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiTimestepRegressionExampleOld.class);
+    private int trainSize = 10;
+    private int testSize = 100;
+    private int numberOfTimesteps = 50;
+    int miniBatchSize = 50;
+    int nEpochs = 5;
+    private List<String> rawStrings;
+    private static int cnter = 0;
     //Make sure miniBatchSize is divisable by trainSize and testSize,
     //as rnnTimeStep will not accept different sized examples
 
@@ -85,7 +84,7 @@ public class MultiTimestepRegressionExampleoLD {
 
     private static int numOfVariables = 0;  // in csv.
 
-    public MultiTimestepRegressionExampleoLD() throws Exception {
+    public MultiTimestepRegressionExampleOld() throws Exception {
         System.out.println(new File(".").toPath().toAbsolutePath().toString());
         //Set number of examples for training, testing, and time steps
 
@@ -96,9 +95,9 @@ public class MultiTimestepRegressionExampleoLD {
 
         // ----- Load the training data -----
         SequenceRecordReader trainFeatures = new CSVSequenceRecordReader();
-        trainFeatures.initialize(new NumberedFileInputSplit(featuresDirTrain.getAbsolutePath() + "/train_%d.csv", 0, trainSize - 1));
+        trainFeatures.initialize(new NumberedFileInputSplit(featuresDirTrain.getAbsolutePath() + "/train_%d.csv", 0, trainSize +miniBatchSize- 1));
         SequenceRecordReader trainLabels = new CSVSequenceRecordReader();
-        trainLabels.initialize(new NumberedFileInputSplit(labelsDirTrain.getAbsolutePath() + "/train_%d.csv", 0, trainSize - 1));
+        trainLabels.initialize(new NumberedFileInputSplit(labelsDirTrain.getAbsolutePath() + "/train_%d.csv", 0, trainSize +miniBatchSize- 1));
 
         DataSetIterator trainDataIter = new SequenceRecordReaderDataSetIterator(trainFeatures, trainLabels, miniBatchSize, -1, true, SequenceRecordReaderDataSetIterator.AlignmentMode.ALIGN_END);
 
@@ -120,6 +119,9 @@ public class MultiTimestepRegressionExampleoLD {
 
         trainDataIter.setPreProcessor(normalizer);
         testDataIter.setPreProcessor(normalizer);
+//Create data set from iterator here since we only have a single data set
+        DataSet trainData = trainDataIter.next();
+        DataSet testData = testDataIter.next();
 
 
         // ----- Configure the network -----
@@ -145,48 +147,26 @@ public class MultiTimestepRegressionExampleoLD {
 //        int nEpochs = 5;
 
         for (int i = 0; i < nEpochs; i++) {
-            net.fit(trainDataIter);
-            trainDataIter.reset();
+            net.fit(trainData);
             LOGGER.info("Epoch " + i + " complete. Time series evaluation:");
 
             RegressionEvaluation evaluation = new RegressionEvaluation(2);
 
             //Run evaluation. This is on 25k reviews, so can take some time
-            while (testDataIter.hasNext()) {
-                DataSet t = testDataIter.next();
-                INDArray features = t.getFeatureMatrix();
-                INDArray lables = t.getLabels();
-                INDArray predicted = net.output(features, true);
-
-                evaluation.evalTimeSeries(lables, predicted);
-            }
-
+            INDArray features = trainData.getFeatureMatrix();
+            INDArray lables = trainData.getLabels();
+            INDArray predicted = net.output(features, true);
+            evaluation.evalTimeSeries(lables, predicted);
             System.out.println(evaluation.stats());
 
-            testDataIter.reset();
         }
-
-        /**
-         * All code below this point is only necessary for plotting
-         */
-
-        //Init rrnTimeStemp with train data and predict test data
-        while (trainDataIter.hasNext()) {
-            DataSet t = trainDataIter.next();
-            net.rnnTimeStep(t.getFeatureMatrix());
-        }
-
-        trainDataIter.reset();
-
-        DataSet t = testDataIter.next();
-        INDArray predicted = net.rnnTimeStep(t.getFeatureMatrix());
-        INDArray predicted1 = net.rnnTimeStep(predicted);
-        INDArray predicted2 = net.rnnTimeStep(predicted1);
-
+        INDArray predicted = net.rnnTimeStep(testData.getFeatureMatrix());
+//        INDArray predicted1 = net.rnnTimeStep(predicted);
+//        INDArray predicted2 = net.rnnTimeStep(predicted1);
 
         normalizer.revertLabels(predicted);
-        normalizer.revertLabels(predicted1);
-        normalizer.revertLabels(predicted2);
+//        normalizer.revertLabels(predicted1);
+//        normalizer.revertLabels(predicted2);
 
 
         ArrayList<Double> ask = new ArrayList<>();
@@ -198,18 +178,18 @@ public class MultiTimestepRegressionExampleoLD {
             String[] gg = s.split(",");
             ask.add(Double.parseDouble(gg[1]));
             bid.add(Double.parseDouble(gg[0]));
-            askbid.add(new AskBid(Double.parseDouble(gg[1]),Double.parseDouble(gg[0])));
+            askbid.add(new AskBid(Double.parseDouble(gg[1]), Double.parseDouble(gg[0])));
         }
-        System.out.println("predicted size=" + predicted1.size(0));
-        System.out.println(predicted1);
-        int nRows = predicted1.shape()[2];
-        for (int i = 0; i <nRows; i++) {
-            askbid.add(new AskBid(predicted1.slice(0).slice(1).getDouble(i),predicted1.slice(0).slice(0).getDouble(i)));
+        System.out.println("predicted size=" + predicted.size(0));
+        System.out.println(predicted);
+        int nRows = predicted.shape()[2];
+        for (int i = 0; i < nRows; i++) {
+            askbid.add(new AskBid(predicted.slice(0).slice(1).getDouble(i), predicted.slice(0).slice(0).getDouble(i)));
         }
 
         int ducnt = 0;
         System.out.println("-----------------------------------------------------------------");
-        for (AskBid ab:askbid) {
+        for (AskBid ab : askbid) {
             System.out.println((ducnt++) + "\t" + ab);
         }
 
@@ -217,17 +197,17 @@ public class MultiTimestepRegressionExampleoLD {
         //Convert raw string data to IndArrays for plotting
         INDArray trainArray = createIndArrayFromStringList(rawStrings, 0, trainSize);
         INDArray testArray = createIndArrayFromStringList(rawStrings, trainSize, testSize);
-        INDArray fullArray = createIndArrayFromStringList(rawStrings, 0, trainSize+testSize);
+        INDArray fullArray = createIndArrayFromStringList(rawStrings, 0, trainSize + testSize+miniBatchSize);
 
         //Create plot with out data
         XYSeriesCollection c = new XYSeriesCollection();
         createSeries(c, fullArray, 0, "data");
 //        createSeries(c, testArray, trainSize - 1, "Actual test data");
         createSeries(c, predicted, trainSize - 1, "Predicted data");
-        createSeries(c, predicted1, trainSize +testSize - 1
-                , "Predicted future data");
-        createSeries(c, predicted2, trainSize + 2*testSize - 1
-                , "Predicted future data");
+//        createSeries(c, predicted1, trainSize + testSize - 1
+//                , "Predicted future data");
+//        createSeries(c, predicted2, trainSize + 2 * testSize - 1
+//                , "Predicted future data");
 
         plotDataset(c);
 
@@ -292,14 +272,14 @@ public class MultiTimestepRegressionExampleoLD {
         // get a reference to the plot for further customisation...
         final XYPlot plot = chart.getXYPlot();
         plot.getDomainAxis().setAutoRange(true);
-        plot.getDomainAxis().setRange(rawStrings.size()-150,rawStrings.size());
+        plot.getDomainAxis().setRange(rawStrings.size() - 200, rawStrings.size()-50);
 
         // Auto zoom to fit time series in initial window`
         final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(true);
         rangeAxis.setAutoRangeIncludesZero(false);
         try {
-            ChartUtilities.saveChartAsPNG(new File("./images/image"+(cnter++)+".png"),chart,1400,800);
+            ChartUtilities.saveChartAsPNG(new File("./images/image" + (cnter++) + ".png"), chart, 1400, 800);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -314,15 +294,15 @@ public class MultiTimestepRegressionExampleoLD {
      * @return
      * @throws IOException
      */
-    private  List<String> prepareTrainAndTest() throws IOException {
+    private List<String> prepareTrainAndTest() throws IOException {
         Path rawPath = Paths.get(baseDir.getAbsolutePath() + "/passengers_raw.csv");
 
         List<String> rawStrings = Files.readAllLines(rawPath, Charset.defaultCharset());
 //        testSize=40;
 //        numberOfTimesteps=40;
         trainSize = miniBatchSize * (int) ((rawStrings.size() - testSize - numberOfTimesteps) / miniBatchSize);
-        System.out.println("training size=" + trainSize);
-
+        int cgg = rawStrings.size() - trainSize - numberOfTimesteps - testSize;
+        while(cgg-->0)rawStrings.remove(0);
         setNumOfVariables(rawStrings);
 
         //Remove all files before generating new ones
@@ -331,21 +311,21 @@ public class MultiTimestepRegressionExampleoLD {
         FileUtils.cleanDirectory(featuresDirTest);
         FileUtils.cleanDirectory(labelsDirTest);
 
-        for (int i = 0; i < trainSize; i++) {
-            Path featuresPath = Paths.get(featuresDirTrain.getAbsolutePath() + "/train_" + i + ".csv");
-            Path labelsPath = Paths.get(labelsDirTrain + "/train_" + i + ".csv");
+        for (int i = numberOfTimesteps; i < trainSize+numberOfTimesteps; i++) {
+            Path featuresPath = Paths.get(featuresDirTrain.getAbsolutePath() + "/train_" + (i-numberOfTimesteps) + ".csv");
+            Path labelsPath = Paths.get(labelsDirTrain + "/train_" + (i-numberOfTimesteps) + ".csv");
             int j;
-            for (j = 0; j < numberOfTimesteps; j++) {
+            for (j = -numberOfTimesteps; j < 0; j++) {
                 Files.write(featuresPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             }
             Files.write(labelsPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         }
 
-        for (int i = trainSize; i < testSize + trainSize; i++) {
-            Path featuresPath = Paths.get(featuresDirTest + "/test_" + i + ".csv");
-            Path labelsPath = Paths.get(labelsDirTest + "/test_" + i + ".csv");
+        for (int i = trainSize+numberOfTimesteps; i < testSize + trainSize+numberOfTimesteps; i++) {
+            Path featuresPath = Paths.get(featuresDirTest + "/test_" + (i-numberOfTimesteps) + ".csv");
+            Path labelsPath = Paths.get(labelsDirTest + "/test_" + (i-numberOfTimesteps) + ".csv");
             int j;
-            for (j = 0; j < numberOfTimesteps; j++) {
+            for (j = -numberOfTimesteps; j < 0; j++) {
                 Files.write(featuresPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             }
             Files.write(labelsPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
@@ -354,7 +334,7 @@ public class MultiTimestepRegressionExampleoLD {
         return rawStrings;
     }
 
-    private  void setNumOfVariables(List<String> rawStrings) {
+    private void setNumOfVariables(List<String> rawStrings) {
         numOfVariables = rawStrings.get(0).split(",").length;
     }
 

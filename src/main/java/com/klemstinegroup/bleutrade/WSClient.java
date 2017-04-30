@@ -40,7 +40,7 @@ public class WSClient {
         }
         if (!firstRun) {
             try {
-                new MultiTimestepRegressionExampleoLD();
+                new MultiTimestepRegressionExample();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -76,7 +76,7 @@ public class WSClient {
                 System.out.println("firstrun");
                 firstRun=false;
                 try {
-                    new MultiTimestepRegressionExampleoLD();
+                    new MultiTimestepRegressionExample();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

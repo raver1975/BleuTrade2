@@ -55,6 +55,7 @@ import java.util.List;
 
 public class MultiTimestepRegressionExample {
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiTimestepRegressionExample.class);
+    private static int bb;
 
     private static File initBaseFile(String fileName) {
             return new File(fileName);
@@ -70,19 +71,19 @@ public class MultiTimestepRegressionExample {
 
     private static int numOfVariables = 0;  // in csv.
 
-    public static void main(String[] args) throws Exception {
+     MultiTimestepRegressionExample() throws IOException, InterruptedException {
 
         //Set number of examples for training, testing, and time steps
         int trainSize = 100;
-        int testSize = 20;
-        int numberOfTimesteps = 20;
+        int testSize = 40;
+        int numberOfTimesteps = 80;
 
         //Prepare multi time step data, see method comments for more info
         List<String> rawStrings = prepareTrainAndTest(trainSize, testSize, numberOfTimesteps);
 
         //Make sure miniBatchSize is divisable by trainSize and testSize,
         //as rnnTimeStep will not accept different sized examples
-        int miniBatchSize = 10;
+        int miniBatchSize = 20;
 
         // ----- Load the training data -----
         SequenceRecordReader trainFeatures = new CSVSequenceRecordReader();
@@ -130,7 +131,7 @@ public class MultiTimestepRegressionExample {
         MultiLayerNetwork net = new MultiLayerNetwork(conf);
         net.init();
 
-        net.setListeners(new GradientsAndParamsListener(net,100),new ScoreIterationListener(20));
+//        net.setListeners(new GradientsAndParamsListener(net,100),new ScoreIterationListener(20));
 
         // ----- Train the network, evaluating the test set performance at each epoch -----
         int nEpochs = 5;
@@ -171,22 +172,22 @@ public class MultiTimestepRegressionExample {
 
         DataSet t = testDataIter.next();
         INDArray predicted = net.rnnTimeStep(t.getFeatureMatrix());
-        INDArray predicted1 = net.output(t.getFeatureMatrix());
 
 
-        normalizer.revertLabels(predicted);
-        normalizer.revertLabels(predicted1);
-
+         normalizer.revertLabels(predicted);
         //Convert raw string data to IndArrays for plotting
-        INDArray trainArray = createIndArrayFromStringList(rawStrings, 0, trainSize);
-        INDArray testArray = createIndArrayFromStringList(rawStrings, trainSize, testSize);
+//       /INDArray trainArray = createIndArrayFromStringList(rawStrings, 0, trainSize);
+//        INDArray testArray = createIndArrayFromStringList(rawStrings, trainSize, testSize);
+         INDArray fullArray = createIndArrayFromStringList(rawStrings, 0, trainSize + testSize+numberOfTimesteps);
 
-        //Create plot with out data
+
+         //Create plot with out data
         XYSeriesCollection c = new XYSeriesCollection();
-        createSeries(c, trainArray, 0, "Train data");
-        createSeries(c, testArray, trainSize - 1, "Actual test data");
-        createSeries(c, predicted, trainSize - 1, "Predicted test data");
-        createSeries(c, predicted1, trainSize +testSize- 1, "Predicted future data");
+        createSeries(c, fullArray, 0, "Train data");
+//        createSeries(c, testArray, trainSize - 1, "Actual test data");
+        createSeries(c, predicted, bb+trainSize - 1, "Predicted test data");
+//         createSeries(c, predicted1, trainSize+numberOfTimesteps - 1, "Predicted test data");
+
         plotDataset(c);
 
         LOGGER.info("----- Example Complete -----");
@@ -197,7 +198,7 @@ public class MultiTimestepRegressionExample {
      * Creates an IndArray from a list of strings
      * Used for plotting purposes
      */
-    private static INDArray createIndArrayFromStringList(List<String> rawStrings, int startIndex, int length) {
+    private INDArray createIndArrayFromStringList(List<String> rawStrings, int startIndex, int length) {
         List<String> stringList = rawStrings.subList(startIndex, startIndex + length);
 
         double[][] primitives = new double[numOfVariables][stringList.size()];
@@ -214,7 +215,7 @@ public class MultiTimestepRegressionExample {
     /**
      * Used to create the different time series for ploting purposes
      */
-    private static XYSeriesCollection createSeries(XYSeriesCollection seriesCollection, INDArray data, int offset, String name) {
+    private XYSeriesCollection createSeries(XYSeriesCollection seriesCollection, INDArray data, int offset, String name) {
         int nRows = data.shape()[2];
         boolean predicted = name.startsWith("Predicted");
         int repeat = predicted ? data.shape()[1] : data.shape()[0];
@@ -236,11 +237,11 @@ public class MultiTimestepRegressionExample {
     /**
      * Generate an xy plot of the datasets provided.
      */
-    private static void plotDataset(XYSeriesCollection c) {
+    private void plotDataset(XYSeriesCollection c) {
 
         String title = "Regression example";
         String xAxisLabel = "Timestep";
-        String yAxisLabel = "Number of passengers";
+        String yAxisLabel = "Coin Price";
         PlotOrientation orientation = PlotOrientation.VERTICAL;
         boolean legend = true;
         boolean tooltips = false;
@@ -253,6 +254,11 @@ public class MultiTimestepRegressionExample {
         // Auto zoom to fit time series in initial window
         final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(true);
+
+        final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+        domainAxis.setAutoRangeIncludesZero(false);
+        domainAxis.setAutoRange(true);
+
 
         JPanel panel = new ChartPanel(chart);
 
@@ -274,10 +280,17 @@ public class MultiTimestepRegressionExample {
      * @return
      * @throws IOException
      */
-    private static List<String> prepareTrainAndTest(int trainSize, int testSize, int numberOfTimesteps) throws IOException {
+    private List<String> prepareTrainAndTest(int trainSize, int testSize, int numberOfTimesteps) throws IOException {
         Path rawPath = Paths.get(baseDir.getAbsolutePath() + "/passengers_raw.csv");
 
         List<String> rawStrings = Files.readAllLines(rawPath, Charset.defaultCharset());
+        System.out.println("rawStrings:"+rawStrings.size());
+         bb=rawStrings.size();
+        while(rawStrings.size()>trainSize+testSize+numberOfTimesteps){
+            rawStrings.remove(0);
+        }
+        bb-=rawStrings.size();
+        System.out.println("rawStrings:"+rawStrings.size());
         setNumOfVariables(rawStrings);
 
         //Remove all files before generating new ones
@@ -309,7 +322,7 @@ public class MultiTimestepRegressionExample {
         return rawStrings;
     }
 
-    private static void setNumOfVariables(List<String> rawStrings) {
+    private void setNumOfVariables(List<String> rawStrings) {
         numOfVariables = rawStrings.get(0).split(",").length;
     }
 }
