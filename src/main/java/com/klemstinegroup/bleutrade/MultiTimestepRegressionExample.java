@@ -35,7 +35,9 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -58,11 +60,12 @@ import java.util.List;
 public class MultiTimestepRegressionExample {
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiTimestepRegressionExample.class);
     private static int trainSize = 10;
-    private static int testSize = 20;
-    private static int numberOfTimesteps = 20;
-    static int miniBatchSize = 20;
-    static int nEpochs = 50;
+    private static int testSize = 40;
+    private static int numberOfTimesteps = 40;
+    static int miniBatchSize = 40;
+    static int nEpochs = 200;
     private static List<String> rawStrings;
+    private static int cnter;
     //Make sure miniBatchSize is divisable by trainSize and testSize,
     //as rnnTimeStep will not accept different sized examples
 
@@ -185,11 +188,29 @@ public class MultiTimestepRegressionExample {
         DataSet t = testDataIter.next();
         INDArray predicted = net.rnnTimeStep(t.getFeatureMatrix());
 
-
+//trainDataIter.reset();
+//testDataIter.reset();
+//net.rnnClearPreviousState();
+//        while (trainDataIter.hasNext()) {
+//            DataSet t1 = trainDataIter.next();
+//            net.rnnTimeStep(t1.getFeatureMatrix());
+//        }
+//        INDArray predicted1=null;
+//        while (testDataIter.hasNext()) {
+//            DataSet t1 = testDataIter.next();
+//            predicted1=net.rnnTimeStep(t1.getFeatureMatrix());
+//        }
+        INDArray predicted1=predicted.dup();
+        while (testDataIter.hasNext()) {
+            t = testDataIter.next();
+            System.out.println("hsd nrxt");
+            predicted1 = net.rnnTimeStep(t.getFeatureMatrix());
+        }
 //        INDArray predicted1 = predicted.tensorAlongDimension(predicted.size(2)-1,1,0);	//Gets the last time step output
 
 
-        INDArray predicted1 = net.rnnTimeStep(predicted);    //Do one time step of forward pass
+        predicted1 = net.rnnTimeStep(predicted1.dup());
+//         predicted1 = net.rnnTimeStep(predicted1.dup());//Do one time step of forward pass
 //            INDArray predicted2=predicted1.dup();
 
         normalizer.revertLabels(predicted);
@@ -231,7 +252,8 @@ public class MultiTimestepRegressionExample {
         createSeries(c, trainArray, 0, "Train data");
         createSeries(c, testArray, trainSize - 1, "Actual test data");
         createSeries(c, predicted, trainSize - 1, "Predicted test data");
-        createSeries(c, predicted1, trainSize + testSize - 2, "Predicted futue data");
+        createSeries(c, predicted1, trainSize + testSize - 1
+                , "Predicted future data");
 
         plotDataset(c);
 
@@ -296,20 +318,30 @@ public class MultiTimestepRegressionExample {
         // get a reference to the plot for further customisation...
         final XYPlot plot = chart.getXYPlot();
         plot.getDomainAxis().setAutoRange(true);
+        plot.getDomainAxis().setRange(rawStrings.size()-100,rawStrings.size());
+
         // Auto zoom to fit time series in initial window
         final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(true);
+        rangeAxis.setAutoRangeIncludesZero(false);
 
         JPanel panel = new ChartPanel(chart);
 
         JFrame f = new JFrame(new Date().toString());
+       //f.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
         f.add(panel);
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        f.pack();
+        f.setSize(1920,1080);
 //        f.setTitle("Training Data");
 
         RefineryUtilities.centerFrameOnScreen(f);
         f.setVisible(true);
+        BufferedImage image = ComponentImageCapture.getScreenShot(panel);
+        try {
+            ImageIO.write(image,"png",new File("image"+(cnter++)+".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -326,7 +358,7 @@ public class MultiTimestepRegressionExample {
         List<String> rawStrings = Files.readAllLines(rawPath, Charset.defaultCharset());
 //        testSize=40;
 //        numberOfTimesteps=40;
-        trainSize = 10 * (int) ((rawStrings.size() - testSize - numberOfTimesteps) / 10);
+        trainSize = miniBatchSize * (int) ((rawStrings.size() - testSize - numberOfTimesteps) / miniBatchSize);
         System.out.println("training size=" + trainSize);
 
         setNumOfVariables(rawStrings);
