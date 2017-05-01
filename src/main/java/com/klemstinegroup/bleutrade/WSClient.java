@@ -23,7 +23,7 @@ public class WSClient {
         for (String s : parsed) {
             if (fileWriter != null) {
                 String[] bb = s.split(",");
-                String out = (Double.parseDouble(bb[1]) * 100000) + "," + (Double.parseDouble(bb[2]) * 100000);
+                String out = (Long.parseLong(bb[0]) )+","+Double.parseDouble(bb[1])  + "," + (Double.parseDouble(bb[2]));
                 System.out.println(messageCount+"\t"+out);
                 messageCount++;
                 File file = new File("./rnnRegression/passengers_raw.csv");
@@ -40,7 +40,7 @@ public class WSClient {
         }
         if (!firstRun) {
             try {
-                new MultiTimestepRegressionExample();
+                new TimeSeriesExample();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -76,7 +76,7 @@ public class WSClient {
                 System.out.println("firstrun");
                 firstRun=false;
                 try {
-                    new MultiTimestepRegressionExample();
+                    new TimeSeriesExample();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -311,21 +311,21 @@ public class MultiTimestepRegressionExampleOld {
         FileUtils.cleanDirectory(featuresDirTest);
         FileUtils.cleanDirectory(labelsDirTest);
 
-        for (int i = numberOfTimesteps; i < trainSize+numberOfTimesteps; i++) {
-            Path featuresPath = Paths.get(featuresDirTrain.getAbsolutePath() + "/train_" + (i-numberOfTimesteps) + ".csv");
-            Path labelsPath = Paths.get(labelsDirTrain + "/train_" + (i-numberOfTimesteps) + ".csv");
+        for (int i = 0; i < trainSize; i++) {
+            Path featuresPath = Paths.get(featuresDirTrain.getAbsolutePath() + "/train_" + i + ".csv");
+            Path labelsPath = Paths.get(labelsDirTrain + "/train_" + i+ ".csv");
             int j;
-            for (j = -numberOfTimesteps; j < 0; j++) {
+            for (j = 0; j < numberOfTimesteps; j++) {
                 Files.write(featuresPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             }
             Files.write(labelsPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         }
 
-        for (int i = trainSize+numberOfTimesteps; i < testSize + trainSize+numberOfTimesteps; i++) {
-            Path featuresPath = Paths.get(featuresDirTest + "/test_" + (i-numberOfTimesteps) + ".csv");
-            Path labelsPath = Paths.get(labelsDirTest + "/test_" + (i-numberOfTimesteps) + ".csv");
+        for (int i = trainSize; i < testSize + trainSize; i++) {
+            Path featuresPath = Paths.get(featuresDirTest + "/test_" + i + ".csv");
+            Path labelsPath = Paths.get(labelsDirTest + "/test_" + i + ".csv");
             int j;
-            for (j = -numberOfTimesteps; j < 0; j++) {
+            for (j =0; j < numberOfTimesteps; j++) {
                 Files.write(featuresPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             }
             Files.write(labelsPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);

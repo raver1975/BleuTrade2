@@ -172,9 +172,11 @@ public class MultiTimestepRegressionExample {
 
         DataSet t = testDataIter.next();
         INDArray predicted = net.rnnTimeStep(t.getFeatureMatrix());
-
+       net.rnnClearPreviousState();
+         INDArray predicted1 = net.rnnTimeStep(predicted.dup());
 
          normalizer.revertLabels(predicted);
+         normalizer.revertLabels(predicted1);
         //Convert raw string data to IndArrays for plotting
 //       /INDArray trainArray = createIndArrayFromStringList(rawStrings, 0, trainSize);
 //        INDArray testArray = createIndArrayFromStringList(rawStrings, trainSize, testSize);
@@ -185,7 +187,8 @@ public class MultiTimestepRegressionExample {
         XYSeriesCollection c = new XYSeriesCollection();
         createSeries(c, fullArray, 0, "Train data");
 //        createSeries(c, testArray, trainSize - 1, "Actual test data");
-        createSeries(c, predicted, bb+trainSize - 1, "Predicted test data");
+         createSeries(c, predicted, trainSize - 1, "Predicted test data");
+         createSeries(c, predicted1, trainSize+testSize - 1, "Predicted future data");
 //         createSeries(c, predicted1, trainSize+numberOfTimesteps - 1, "Predicted test data");
 
         plotDataset(c);
@@ -299,21 +302,21 @@ public class MultiTimestepRegressionExample {
         FileUtils.cleanDirectory(featuresDirTest);
         FileUtils.cleanDirectory(labelsDirTest);
 
-        for (int i = 0; i < trainSize; i++) {
-            Path featuresPath = Paths.get(featuresDirTrain.getAbsolutePath() + "/train_" + i + ".csv");
-            Path labelsPath = Paths.get(labelsDirTrain + "/train_" + i + ".csv");
+        for (int i = numberOfTimesteps; i < trainSize+numberOfTimesteps; i++) {
+            Path featuresPath = Paths.get(featuresDirTrain.getAbsolutePath() + "/train_" + (i-numberOfTimesteps) + ".csv");
+            Path labelsPath = Paths.get(labelsDirTrain + "/train_" + (i-numberOfTimesteps) + ".csv");
             int j;
-            for (j = 0; j < numberOfTimesteps; j++) {
+            for (j = -numberOfTimesteps; j < 0; j++) {
                 Files.write(featuresPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             }
             Files.write(labelsPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         }
 
-        for (int i = trainSize; i < testSize + trainSize; i++) {
-            Path featuresPath = Paths.get(featuresDirTest + "/test_" + i + ".csv");
-            Path labelsPath = Paths.get(labelsDirTest + "/test_" + i + ".csv");
+        for (int i = trainSize+numberOfTimesteps; i < testSize + trainSize+numberOfTimesteps; i++) {
+            Path featuresPath = Paths.get(featuresDirTest + "/test_" + (i-numberOfTimesteps) + ".csv");
+            Path labelsPath = Paths.get(labelsDirTest + "/test_" + (i-numberOfTimesteps) + ".csv");
             int j;
-            for (j = 0; j < numberOfTimesteps; j++) {
+            for (j = -numberOfTimesteps; j < 0; j++) {
                 Files.write(featuresPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             }
             Files.write(labelsPath, rawStrings.get(i + j).concat(System.lineSeparator()).getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
