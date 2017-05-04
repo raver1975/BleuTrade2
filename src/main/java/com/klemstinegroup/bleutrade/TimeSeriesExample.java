@@ -24,6 +24,8 @@ import weka.core.Instances;
 import weka.classifiers.functions.GaussianProcesses;
 import weka.classifiers.evaluation.NumericPrediction;
 import weka.classifiers.timeseries.WekaForecaster;
+import weka.core.SelectedTag;
+
 
 import javax.swing.*;
 
@@ -37,10 +39,23 @@ import javax.swing.*;
  * jfreechart-1.0.13.jar (from the time series package lib directory)
  */
 public class TimeSeriesExample {
+    static JFrame f;
+    static JPanel panel;
 
-    private static int stepsToPredict=30;
+    static {
+        f = new JFrame();
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        f.pack();
+        f.setTitle("Training Data");
+        f.setSize(1200,800);
+
+        RefineryUtilities.centerFrameOnScreen(f);
+        f.setVisible(true);
+    }
+
+    private static int stepsToPredict = 30;
     private static int cnter;
-    public static final int howManyRealToShow=100;
+    public static final int howManyRealToShow = 100;
 
     public TimeSeriesExample() throws Exception {
         String data = "@relation stock\n" +
@@ -55,14 +70,14 @@ public class TimeSeriesExample {
         while (sc.hasNext()) {
             String ggh = sc.nextLine();
             String[] sp = ggh.split(",");
-            s1.add(Long.parseLong(sp[0])/900000L, Double.parseDouble(sp[1]));
-            s2.add(Long.parseLong(sp[0])/900000L, Double.parseDouble(sp[2]));
+            s1.add(Long.parseLong(sp[0]) / 900000L, Double.parseDouble(sp[1]));
+            s2.add(Long.parseLong(sp[0]) / 900000L, Double.parseDouble(sp[2]));
             data += ggh + "\n";
-            cnt=Math.max(cnt,Long.parseLong(sp[0])/900000L);
+            cnt = Math.max(cnt, Long.parseLong(sp[0]) / 900000L);
         }
         System.out.println(data);
-        while(s1.getItemCount()>howManyRealToShow)s1.remove(0);
-        while(s2.getItemCount()>howManyRealToShow)s2.remove(0);
+        while (s1.getItemCount() > howManyRealToShow) s1.remove(0);
+        while (s2.getItemCount() > howManyRealToShow) s2.remove(0);
         // load the wine data
         Instances wine = new Instances(new BufferedReader(new StringReader(data)));
 
@@ -75,11 +90,12 @@ public class TimeSeriesExample {
 
         // default underlying classifier is SMOreg (SVM) - we'll use
         // gaussian processes for regression instead
-        forecaster.setBaseForecaster(new GaussianProcesses());
+//        GaussianProcesses gp=new GaussianProcesses();
+//        forecaster.setBaseForecaster(gp);
 
 //        forecaster.getTSLagMaker().setTimeStampField("time"); // date time stamp
 //        forecaster.getTSLagMaker().setMinLag(1);
-//        forecaster.getTSLagMaker().setMaxLag(stepsToPredict); // monthly data
+//        forecaster.getTSLagMaker().setMaxLag(96); // daily lag
 
         // build the model
         forecaster.buildForecaster(wine, System.out);
@@ -102,8 +118,8 @@ public class TimeSeriesExample {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction bibb = predsAtStep.get(0);
             NumericPrediction askb = predsAtStep.get(1);
-            s3.add(i+cnt, bibb.predicted());
-            s4.add(i+cnt, askb.predicted());
+            s3.add(i + cnt, bibb.predicted());
+            s4.add(i + cnt, askb.predicted());
             System.out.println(bibb.predicted() + "," + askb.predicted());
         }
 
@@ -145,16 +161,19 @@ public class TimeSeriesExample {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        JPanel panel = new ChartPanel(chart);
+        if (panel == null) {
+            panel = new ChartPanel(chart);
+        } else {
+            f.remove(panel);
+            panel = new ChartPanel(chart);
+
+        }
+        f.add(panel);
+         panel.revalidate();
+        f.revalidate();
+        Thread.sleep(200);
 //
-//        JFrame f = new JFrame();
-//        f.add(panel);
-//        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        f.pack();
-//        f.setTitle("Training Data");
-//
-//        RefineryUtilities.centerFrameOnScreen(f);
-//        f.setVisible(true);
+
 
         // we can continue to use the trained forecaster for further forecasting
         // by priming with the most recent historical data (as it becomes available).
