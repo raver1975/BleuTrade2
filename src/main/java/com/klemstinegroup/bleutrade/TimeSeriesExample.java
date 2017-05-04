@@ -16,6 +16,10 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import weka.classifiers.bayes.BayesNet;
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.functions.SMO;
+import weka.classifiers.functions.SMOreg;
 import weka.core.Instances;
 import weka.classifiers.functions.GaussianProcesses;
 import weka.classifiers.evaluation.NumericPrediction;
@@ -34,9 +38,9 @@ import javax.swing.*;
  */
 public class TimeSeriesExample {
 
-    private static int stepsToPredict=100;
+    private static int stepsToPredict=30;
     private static int cnter;
-    private final int howManyRealToShow=stepsToPredict*2;
+    public static final int howManyRealToShow=100;
 
     public TimeSeriesExample() throws Exception {
         String data = "@relation stock\n" +
@@ -71,12 +75,11 @@ public class TimeSeriesExample {
 
         // default underlying classifier is SMOreg (SVM) - we'll use
         // gaussian processes for regression instead
-//        forecaster.setBaseForecaster(new GaussianProcesses());
+        forecaster.setBaseForecaster(new GaussianProcesses());
 
-        forecaster.getTSLagMaker().setTimeStampField("time"); // date time stamp
-        forecaster.getTSLagMaker().setMinLag(1);
-        forecaster.getTSLagMaker().setMaxLag(stepsToPredict); // monthly data
-
+//        forecaster.getTSLagMaker().setTimeStampField("time"); // date time stamp
+//        forecaster.getTSLagMaker().setMinLag(1);
+//        forecaster.getTSLagMaker().setMaxLag(stepsToPredict); // monthly data
 
         // build the model
         forecaster.buildForecaster(wine, System.out);

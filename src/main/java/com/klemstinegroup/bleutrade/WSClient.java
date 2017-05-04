@@ -11,7 +11,6 @@ public class WSClient {
 
     private static FileWriter fileWriter;
     private int messageCount = 0;
-    private static boolean firstRun=true;
 
 
     private static Object waitLock = new Object();
@@ -36,15 +35,15 @@ public class WSClient {
                 }
 
             }
-
-        }
-        if (!firstRun) {
-            try {
-                new TimeSeriesExample();
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (messageCount>TimeSeriesExample.howManyRealToShow) {
+                try {
+                    new TimeSeriesExample();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
+
 
     }
 
@@ -73,14 +72,6 @@ public class WSClient {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("firstrun");
-                firstRun=false;
-                try {
-                    new TimeSeriesExample();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
             }
         }).start();
 
