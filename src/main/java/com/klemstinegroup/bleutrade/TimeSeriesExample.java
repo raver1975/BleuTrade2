@@ -95,7 +95,7 @@ public class TimeSeriesExample {
 
 //        forecaster.getTSLagMaker().setTimeStampField("time"); // date time stamp
 //        forecaster.getTSLagMaker().setMinLag(1);
-//        forecaster.getTSLagMaker().setMaxLag(96); // daily lag
+//        forecaster.getTSLagMaker().setMaxLag(96*7); // daily lag
 
         // build the model
         forecaster.buildForecaster(wine, System.out);
@@ -123,7 +123,7 @@ public class TimeSeriesExample {
             System.out.println(bibb.predicted() + "," + askb.predicted());
         }
 
-        String title = "Regression example";
+        String title = "Coin Price Future Prediction";
         String xAxisLabel = "Timestep";
         String yAxisLabel = "Coin Price";
         PlotOrientation orientation = PlotOrientation.VERTICAL;
