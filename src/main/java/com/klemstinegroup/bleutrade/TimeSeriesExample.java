@@ -91,12 +91,13 @@ public class TimeSeriesExample {
         // default underlying classifier is SMOreg (SVM) - we'll use
         // gaussian processes for regression instead
 //        GaussianProcesses gp=new GaussianProcesses();
-//        forecaster.setBaseForecaster(gp);
+        forecaster.setBaseForecaster(new MultilayerPerceptron());
 
-//        forecaster.getTSLagMaker().setTimeStampField("time"); // date time stamp
-//        forecaster.getTSLagMaker().setMinLag(1);
-//        forecaster.getTSLagMaker().setMaxLag(96*7); // daily lag
-
+        forecaster.getTSLagMaker().setTimeStampField("time"); // date time stamp
+        forecaster.getTSLagMaker().setMinLag(1);
+        forecaster.getTSLagMaker().setMaxLag(96); // daily lag
+        forecaster.getTSLagMaker().setAdjustForVariance(true);
+        forecaster.getTSLagMaker().setAdjustForTrends(true);
         // build the model
         forecaster.buildForecaster(wine, System.out);
 
