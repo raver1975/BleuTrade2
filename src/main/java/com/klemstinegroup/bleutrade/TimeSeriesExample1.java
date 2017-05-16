@@ -1,10 +1,5 @@
 package com.klemstinegroup.bleutrade;
 
-import java.io.*;
-
-import java.util.List;
-import java.util.Scanner;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -15,19 +10,17 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import weka.classifiers.bayes.BayesNet;
-import weka.classifiers.functions.MultilayerPerceptron;
-import weka.classifiers.functions.SMO;
-import weka.classifiers.functions.SMOreg;
-import weka.core.Instances;
-import weka.classifiers.functions.GaussianProcesses;
 import weka.classifiers.evaluation.NumericPrediction;
 import weka.classifiers.timeseries.WekaForecaster;
-import weka.core.SelectedTag;
-
+import weka.core.Instances;
 
 import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * Example of using the time series forecasting API. To compile and
@@ -38,7 +31,7 @@ import javax.swing.*;
  * jcommon-1.0.14.jar (from the time series package lib directory)
  * jfreechart-1.0.13.jar (from the time series package lib directory)
  */
-public class TimeSeriesExample {
+public class TimeSeriesExample1 {
     static JFrame f;
     static JPanel panel;
 
@@ -57,7 +50,7 @@ public class TimeSeriesExample {
     private static int cnter;
     public static final int howManyRealToShow = 100;
 
-    public TimeSeriesExample() throws Exception {
+    public TimeSeriesExample1() throws Exception {
         String data = "@relation stock\n" +
                 "@attribute time numeric\n" +
                 "@attribute bid numeric\n" +
