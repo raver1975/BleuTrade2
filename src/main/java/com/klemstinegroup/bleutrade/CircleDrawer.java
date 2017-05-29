@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
-class CircleDrawer implements Drawable {
+public class CircleDrawer implements Drawable {
 
     /** The outline paint. */
     private Paint outlinePaint;

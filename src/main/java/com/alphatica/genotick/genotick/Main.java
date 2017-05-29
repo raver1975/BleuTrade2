@@ -45,7 +45,8 @@ public class Main {
 
     public static void main(String... args) throws IOException, IllegalAccessException {
         s1 = new XYSeries("cumulative profit");
-        s2 = new XYSeries("timestemp profit");
+        s2 = new XYSeries("timestamp profit");
+
         Parameters parameters = new Parameters(args);
         checkHelp(parameters);
         checkVersionRequest(parameters);
