@@ -46,8 +46,9 @@ public class Reversal {
         String reverseFileName = getReverseFileName(set.getName());
         File reverseFile = new File(reverseFileName);
         if(reverseFile.exists()) {
-            output.warningMessage("File " + reverseFileName + " already exists. Not reversing " + set.getName());
-            return;
+            reverseFile.delete();
+//            output.warningMessage("File " + reverseFileName + " already exists. Not reversing " + set.getName());
+//            return;
         }
         List<Number[]> original = getOriginalNumbers(set);
         List<Number[]> reverse = reverseList(original);
@@ -93,7 +94,9 @@ public class Reversal {
         // Column 0 is unchanged
         reversed[0] = table[0];
         // Column 1. Rewrite if first line
-            reversed[1] = 1d/table[1].doubleValue();
+        for (int i=1;i<table.length;i++) {
+            reversed[i] = 1d / table[i].doubleValue();
+        }
             return reversed;
     }
 
@@ -105,8 +108,8 @@ public class Reversal {
     private void writeReverseToFile(List<Number[]> reverse, String reversedFileName) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(reversedFileName))) {
             for(Number[] table: reverse) {
-                String row = mkString(table,",");
-                bw.write(row + "\n");
+                    String row = mkString(table, ",");
+                    bw.write(row + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,10 +120,12 @@ public class Reversal {
         StringBuilder sb = new StringBuilder();
         int count = 0;
         for(Number number: table) {
-            sb.append(number);
-            count++;
-            if(count < table.length) {
-                sb.append(string);
+            if (number!=null && !Double.valueOf(number.doubleValue()).isNaN()) {
+                sb.append(number);
+                count++;
+                if (count < table.length) {
+                    sb.append(string);
+                }
             }
         }
         return sb.toString();

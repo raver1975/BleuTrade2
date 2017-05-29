@@ -1,10 +1,18 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
 import org.apache.commons.io.FileUtils;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +34,50 @@ class ConsoleOutput implements UserOutput {
 
     @Override
     public void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit) {
+        Main.s1.add(timePoint.getValue(),cumulativeProfit);
+        Main.s2.add(timePoint.getValue(),timePointProfit);
+        String title = "Coin Price Future Prediction";
+        String xAxisLabel = "Timestep";
+        String yAxisLabel = "Profit";
+        PlotOrientation orientation = PlotOrientation.VERTICAL;
+        boolean legend = true;
+        boolean tooltips = false;
+        boolean urls = false;
+
+        XYSeriesCollection c = new XYSeriesCollection();
+        c.addSeries(Main.s1);
+        c.addSeries(Main.s2);
+        JFreeChart chart = ChartFactory.createXYLineChart(title, xAxisLabel, yAxisLabel, c, orientation, legend, tooltips, urls);
+
+
+
+        // get a reference to the plot for further customisation...
+        final XYPlot plot = chart.getXYPlot();
+
+        // Auto zoom to fit time series in initial window
+        final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setAutoRange(true);
+        rangeAxis.setAutoRangeIncludesZero(false);
+
+        final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+        domainAxis.setAutoRangeIncludesZero(false);
+        domainAxis.setAutoRange(true);
+
+//        try {
+//            ChartUtilities.saveChartAsPNG(new File("./images/image" + (cnter++) + ".png"), chart, 1400, 800);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        if (Main.panel == null) {
+            Main.panel = new ChartPanel(chart);
+        } else {
+            Main.f.remove(Main.panel);
+            Main.panel = new ChartPanel(chart);
+
+        }
+        Main.f.add(Main.panel);
+        Main.panel.revalidate();
+        Main.f.revalidate();
         log("Profit for " + timePoint.toString() + ": "
                 + "Cumulative profit: " + cumulativeProfit + " "
                 + "TimePoint's profit: " + timePointProfit);

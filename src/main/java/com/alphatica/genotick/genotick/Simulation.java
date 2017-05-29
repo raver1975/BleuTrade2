@@ -19,6 +19,13 @@ import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.RobotExecutorFactory;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -160,6 +167,7 @@ public class Simulation {
 
     private void showStatsResults(Map<DataSetName, Double> statsResults) {
         for(Map.Entry<DataSetName,Double> entry: statsResults.entrySet()) {
+//todo profit out here
             output.infoMessage("Profit for " + entry.getKey() + ": " + entry.getValue());
         }
     }

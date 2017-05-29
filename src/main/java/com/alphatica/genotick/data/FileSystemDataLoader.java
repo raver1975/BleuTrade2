@@ -23,14 +23,14 @@ public class FileSystemDataLoader implements DataLoader {
 
     private MainAppData loadData() {
         MainAppData data = new MainAppData();
-        String extension = ".csv";
+        String extension = ".txt";
         List<String> names = DataUtils.listFiles(extension,paths);
         if(names == null) {
             throw new DataException("Unable to list files");
         }
         for (String name : names) {
-            output.infoMessage("Reading file " + name);
-            data.addDataSet(createDataSet(name));
+                output.infoMessage("Reading file " + name);
+                data.addDataSet(createDataSet(name));
         }
         if(data.isEmpty()) {
             throw new DataException("No files to read!");
@@ -42,10 +42,12 @@ public class FileSystemDataLoader implements DataLoader {
         File file = new File(name);
         dataFileSanityCheck(file);
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            System.out.println("opening "+file);
             List<Number []> lines = DataUtils.createLineList(br);
             output.infoMessage("Got " + lines.size() + " lines");
             return new DataSet(lines,name);
         } catch (IOException  | DataException e) {
+            e.printStackTrace();
             DataException de = new DataException("Unable to process file: " + name);
             de.initCause(e);
             throw de;

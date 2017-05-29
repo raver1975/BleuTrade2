@@ -10,7 +10,17 @@ import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RefineryUtilities;
 
+import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -23,7 +33,26 @@ public class Main {
     private static UserInput input;
     private static UserOutput output;
 
+    public static JFrame f;
+    public static JPanel panel;
+    public static XYSeries s1;
+    public static XYSeries s2;
+//    public static JFreeChart chart;
+
+    static {
+        f = new JFrame();
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        f.pack();
+        f.setTitle("Training Data");
+        f.setSize(1200,800);
+
+        RefineryUtilities.centerFrameOnScreen(f);
+        f.setVisible(true);
+    }
+
     public static void main(String... args) throws IOException, IllegalAccessException {
+        s1 = new XYSeries("cumulative profit");
+        s2 = new XYSeries("timestemp profit");
         Parameters parameters = new Parameters(args);
         checkHelp(parameters);
         checkVersionRequest(parameters);
@@ -191,12 +220,16 @@ public class Main {
     }
 
     private static void checkReverse(Parameters parameters) {
-        String reverseValue = parameters.getValue("reverse");
-        if(reverseValue == null)
-            return;
-        Reversal reversal = new Reversal(reverseValue);
+//        String reverseValue = parameters.getValue("reverse");
+//        if(reverseValue == null)
+//            return;
+        File f=new File("data");
+        for (File ff:f.listFiles()){
+            if (ff.getAbsolutePath().contains("reverse_"))ff.delete();
+        }
+        Reversal reversal = new Reversal("data");
         reversal.reverse();
-        System.exit(0);
+//        System.exit(0);
     }
 
     private static void checkSimulation(Parameters parameters) throws IllegalAccessException {
