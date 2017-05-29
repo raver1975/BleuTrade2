@@ -14,6 +14,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -53,14 +54,18 @@ class ConsoleOutput implements UserOutput {
 
         // get a reference to the plot for further customisation...
         final XYPlot plot = chart.getXYPlot();
+        plot.setRangeZeroBaselineVisible(true);
+        plot.setRangeZeroBaselineStroke(new BasicStroke(10));
 
         // Auto zoom to fit time series in initial window
         final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(true);
-        rangeAxis.setAutoRangeIncludesZero(false);
+        rangeAxis.setAutoRangeIncludesZero(true);
 
         final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
         domainAxis.setAutoRangeIncludesZero(false);
+
+
         domainAxis.setAutoRange(true);
 
 //        try {
