@@ -27,7 +27,7 @@ public class Main {
     private static UserOutput output;
 
     public static JFrame f;
-    public static JPanel panel;
+//    public static JPanel panel;
     public static XYSeries s1;
     public static XYSeries s2;
 //    public static JFreeChart chart;
