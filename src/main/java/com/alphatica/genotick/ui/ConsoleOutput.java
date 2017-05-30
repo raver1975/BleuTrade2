@@ -48,11 +48,18 @@ class ConsoleOutput implements UserOutput {
             public void run() {
                 Main.s1.add(timePoint.getValue(), cumulativeProfit);
                 Main.s2.add(timePoint.getValue(), timePointProfit);
+
+                while (Main.s1.getItemCount()>100){
+                    Main.s1.remove(0);
+                }while (Main.s2.getItemCount()>100){
+                    Main.s2.remove(0);
+                }
+
                 final CircleDrawer anomaly1 = new CircleDrawer(Color.black, new BasicStroke(1.0f), Color.yellow);
                 final CircleDrawer anomaly2 = new CircleDrawer(Color.black, new BasicStroke(1.0f), Color.cyan);
                 String title = "Coin Price Future Prediction";
                 String xAxisLabel = "Timestep";
-                String yAxisLabel = "Profit";
+                String yAxisLabel = "% Profit";
                 PlotOrientation orientation = PlotOrientation.VERTICAL;
                 boolean legend = true;
                 boolean tooltips = false;
