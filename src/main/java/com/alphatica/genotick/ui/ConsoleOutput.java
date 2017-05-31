@@ -51,10 +51,10 @@ new Thread(new Runnable() {
         Main.s2.add(timePoint.getValue() + 1, timePointProfit);
         Main.s2.add(timePoint.getValue() + 2, 0d);
 
-        while (Main.s1.getItemCount() > 100) {
+        while (Main.s1.getItemCount() > 33) {
             Main.s1.remove(0);
         }
-        while (Main.s2.getItemCount() > 300) {
+        while (Main.s2.getItemCount() > 99) {
             Main.s2.remove(0);
         }
         String title = "Coin Price Future Prediction";

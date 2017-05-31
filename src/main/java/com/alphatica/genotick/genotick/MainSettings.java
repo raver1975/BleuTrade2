@@ -13,7 +13,7 @@ public class MainSettings {
     public String populationDAO = "";
     public boolean performTraining = true;
     public String dataSettings = Main.DEFAULT_DATA_DIR;
-    public int populationDesiredSize = 10_000;
+    public int populationDesiredSize = 20_000;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.1;
@@ -27,11 +27,11 @@ public class MainSettings {
     public double skipInstructionProbability = 0.01;
     public long minimumOutcomesToAllowBreeding = 50;
     public long minimumOutcomesBetweenBreeding = 50;
-    public boolean killNonPredictingRobots = true;
-    public double randomRobotsAtEachUpdate = 0.02;
-    public double protectBestRobots = 0.02;
+    public boolean killNonPredictingRobots = false;
+    public double randomRobotsAtEachUpdate = 0.002;
+    public double protectBestRobots = 0.01;
     public boolean requireSymmetricalRobots = true;
-    public double resultThreshold = 1;
+    public double resultThreshold = 2;
     public int ignoreColumns = 0;
 
     private MainSettings() {
