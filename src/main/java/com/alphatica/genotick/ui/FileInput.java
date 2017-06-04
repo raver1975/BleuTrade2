@@ -40,6 +40,7 @@ class FileInput extends BasicUserInput {
             checkAllSettingsParsed(map,parsedKeys);
             return settings;
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException("Unable to read file " + fileName, e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
