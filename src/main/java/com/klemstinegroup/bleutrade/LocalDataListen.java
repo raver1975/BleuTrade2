@@ -53,7 +53,7 @@ public class BleutradeDataListen {
         for (String s : parsed) {
             System.out.println(s);
             String[] bb = s.split(",");
-            priceData.add(new PriceData(Long.parseLong(bb[0]), Double.parseDouble(bb[1]), Double.parseDouble(bb[2])));
+            priceData.add(new PriceData(bb));
             String out = (Long.parseLong(bb[0])) + "," + Double.parseDouble(bb[1]) + "," + (Double.parseDouble(bb[2]));
             messageCnt++;
             System.out.println(messageCnt + "\t" + out);
