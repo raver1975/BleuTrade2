@@ -89,7 +89,7 @@ class ComponentImageCapture {
         f.setJMenuBar(mb);
 
         JPanel p = new JPanel( new BorderLayout(5,5) );
-        p.setBorder( new TitledBorder("Main GUI") );
+        p.setBorder( new TitledBorder("MainModified GUI") );
         p.add( new JScrollPane(new JTree()),
           BorderLayout.WEST );
         p.add( new JScrollPane( new JTextArea(HELP,10,30) ),

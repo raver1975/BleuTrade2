@@ -2,11 +2,11 @@ package com.klemstinegroup.bleutrade;
 
 
 import com.klemstinegroup.bleutrade.json.*;
-import org.apache.http.client.HttpClient;
+import com.klemstinegroup.bleutrade.json.Currency;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,16 +15,11 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * Created by Paul on 2/21/2016.
@@ -34,16 +29,23 @@ import java.util.Map;
 public class Http {
 
     static String uri = "https://bleutrade.com/api/v2";
+    private static String apikey;
+    private static String apisecret;
+    private static long timeout;
+    static DecimalFormat dfdollars = new DecimalFormat("+0000.00;-0000.00");
+    static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
+    static boolean debug=true;
 
     public static double bitcoinPrice() throws IOException {
         String url = "https://api.coinbase.com/v2/prices/spot?currency=USD";
         URL website = null;
-            website = new URL(url);
+        website = new URL(url);
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget=new HttpGet(website.toString());
+        HttpGet httpget = new HttpGet(website.toString());
         CloseableHttpResponse res = httpclient.execute(httpget);
 
-        final InputStream is = res.getEntity().getContent();;
+        final InputStream is = res.getEntity().getContent();
+        ;
         final Reader reader = new InputStreamReader(is);
         final char[] buf = new char[1024];
         int read;
@@ -76,10 +78,11 @@ public class Http {
         System.out.println("opening url=" + (url.length() < 80 ? url : url.substring(0, 80) + "..."));
         URL website = new URL(url);
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget=new HttpGet(website.toString());
+        HttpGet httpget = new HttpGet(website.toString());
         CloseableHttpResponse res = httpclient.execute(httpget);
 
-        final InputStream is = res.getEntity().getContent();;
+        final InputStream is = res.getEntity().getContent();
+        ;
         final Reader reader = new InputStreamReader(is);
         final char[] buf = new char[1024];
         int read;
@@ -95,9 +98,10 @@ public class Http {
     }
 
     public static JSONObject openPrivate(String url, Map<String, String> params) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+        if (apisecret == null) getSecret();
         url = uri + url;
         if (params == null) params = new HashMap<String, String>();
-        params.put("apikey", RnnTrader.apikey);
+        params.put("apikey", apikey);
 
         if (params.size() > 0) {
 
@@ -110,8 +114,7 @@ public class Http {
         }
 
         Mac sha_HMAC = Mac.getInstance("HmacSHA512");
-
-        SecretKeySpec secret_key = new SecretKeySpec(RnnTrader.apisecret.getBytes(), "HmacSHA512");
+        SecretKeySpec secret_key = new SecretKeySpec(apisecret.getBytes(), "HmacSHA512");
         sha_HMAC.init(secret_key);
 
         String hash = toHex(sha_HMAC.doFinal(url.getBytes()));
@@ -121,8 +124,8 @@ public class Http {
 
 
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget=new HttpGet(website.toString());
-        httpget.setHeader("apisign",hash);
+        HttpGet httpget = new HttpGet(website.toString());
+        httpget.setHeader("apisign", hash);
         CloseableHttpResponse res = httpclient.execute(httpget);
 
         final InputStream is = res.getEntity().getContent();
@@ -253,7 +256,7 @@ public class Http {
     //orderstatus (ALL, OK, OPEN, CANCELED)
     //ordertype (ALL, BUY, SELL)
 
-    public static ArrayList<Order> getOrders(String orderStatus,String market) {
+    public static ArrayList<Order> getOrders(String orderStatus, String market) {
         JSONObject json = null;
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("market", market);
@@ -280,11 +283,11 @@ public class Http {
         JSONObject json = null;
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("market", market);
-        params.put("rate", RnnTrader.dfcoins.format(rate));
+        params.put("rate", dfcoins.format(rate));
         params.put("quantity", RnnTrader.dfcoins.format(quantity));
 //        params.put("comments", comments);
-        System.out.println("placing " + (buy ? "buy" : "sell") + " order:" + market + "\t" + RnnTrader.dfcoins.format(rate) + "\t#" + RnnTrader.dfcoins.format(quantity));
-        if (RnnTrader.debug) return 1;
+        System.out.println("placing " + (buy ? "buy" : "sell") + " order:" + market + "\t" + dfcoins.format(rate) + "\t#" + dfcoins.format(quantity));
+        if (debug) return 1;
         try {
             if (buy) json = openPrivate("/market/buylimit", params);
             else json = openPrivate("/market/selllimit", params);
@@ -305,7 +308,7 @@ public class Http {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("orderid", Long.toString(id));
         System.out.println("canceling order " + id);
-        if (RnnTrader.debug) return true;
+        if (debug) return true;
         try {
             json = openPrivate("/market/cancel", params);
         } catch (Exception e) {
@@ -314,5 +317,26 @@ public class Http {
         boolean success = json.getBoolean("success");
         if (!success) System.out.println(json.getString("message"));
         return success;
+    }
+
+    public static void getSecret() {
+        Properties prop = new Properties();
+
+        InputStream input;
+        try {
+            input = new FileInputStream("config.properties");
+            prop.load(input);
+            apikey = prop.getProperty("apikey");
+            apisecret = prop.getProperty("apisecret");
+            timeout = Long.parseLong(prop.getProperty("dataCollectTimeoutSeconds"));
+            debug = Boolean.parseBoolean(prop.getProperty("debug"));
+
+            System.out.println("apikey=" + apikey);
+            System.out.println("apisecret=" + apisecret);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

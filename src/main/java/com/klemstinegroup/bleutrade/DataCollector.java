@@ -17,12 +17,6 @@ public class DataCollector {
     ArrayList<Market> markets = new ArrayList<Market>();
     private ArrayList<Ticker> tickers = new ArrayList<Ticker>();
     private HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
-//    private ArrayList<TickerData> saved=new ArrayList<>();
-//    HashMap<String, TickerData> nowhm = new HashMap<String, TickerData>();
-//    HashMap<String, TickerData> maxhm = new HashMap<String, TickerData>();
-//    HashMap<String, TickerData> minhm = new HashMap<String, TickerData>();
-//    private ArrayList<Balance> balance=new ArrayList<>();
-//    private HashMap<String, Balance> balanceHM = new HashMap<String, Balance>();
     static String apikey;
     static String apisecret;
     static DecimalFormat dfdollars = new DecimalFormat("+0000.00;-0000.00");
@@ -125,6 +119,8 @@ public class DataCollector {
             }
 
             long time = System.currentTimeMillis();
+            String allout = "";
+            String btcdge = "";
             for (String s : tickerHM.keySet()) {
                 String g1 = s.substring(0, s.indexOf('_'));
                 String g2 = s.substring(s.indexOf('_') + 1);
@@ -134,18 +130,32 @@ public class DataCollector {
                 double ask = t.getAsk();
                 double last = 0;
                 if (t.getLast() != null) last = t.getLast();
-                try {
-                    FileWriter fw=new FileWriter(new File("./data/"+g1+"_"+g2+".txt"),true);
-                    String writeOut=time+","+dfcoins.format(bid)+","+dfcoins.format(ask)+"\n";
-                    fw.write(writeOut);
-                    fw.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    String writeOut=time+","+dfcoins.format(bid)+","+dfcoins.format(ask)+"\n";
+                    if ((g1.equals("DOGE")) && (g2.equals("BTC"))) {
+                        btcdge = time + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
+                    }
+                    allout = allout + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
+//                    FileWriter fw=new FileWriter(new File("./data/"+g1+"_"+g2+".txt"),true);
+//                    fw.write(writeOut);
+//                    fw.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 //                saved.add(new TickerData(g1, g2, bid, ask, last, time));
             }
 //
-
+            FileWriter fwall = null;
+            try
+            {
+                fwall = new FileWriter(new File("./data/all.txt"), true);
+                fwall.write(btcdge + allout + "\n");
+                fwall.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
             HashMap<String, Double> hm = new HashMap<String, Double>();
 
             for (int i = 0; i < markets.size(); i++) {
@@ -157,9 +167,14 @@ public class DataCollector {
                 hm.put(g2 + "_" + g1, 1d / tickers.get(i).getAsk());
             }
             System.out.println("time=" + new Date());
+            long timeNow=System.currentTimeMillis();
+            new LocalDataListen();
+            timeNow=System.currentTimeMillis()-timeNow;
+            long sleep=timeout*1000l-timeNow;
+            if (sleep<1000)sleep=1000;
             System.out.println("waiting for "+timeout+"s" );
             try {
-                Thread.sleep(timeout*1000l);
+                Thread.sleep(sleep);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

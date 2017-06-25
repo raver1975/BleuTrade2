@@ -131,7 +131,7 @@ class TradeFrame
         }
     }
 
-    // Main entry point for this example
+    // MainModified entry point for this example
     public static void main(String args[]) {
         // Create an instance of the test application
         TradeFrame mainFrame = new TradeFrame();

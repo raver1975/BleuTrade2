@@ -1,108 +1,158 @@
 package com.klemstinegroup.bleutrade;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYAnnotation;
-import org.jfree.chart.annotations.XYDrawableAnnotation;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RefineryUtilities;
+import com.alphatica.genotick.genotick.MainModified;
+import com.klemstinegroup.bleutrade.json.Balance;
+import com.klemstinegroup.bleutrade.json.Market;
+import com.klemstinegroup.bleutrade.json.Ticker;
 
-import javax.swing.*;
-import javax.websocket.*;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
-@ClientEndpoint
-public class BleutradeDataListen {
+public class LocalDataListen {
 
-    static JFrame f;
-    static JPanel panel;
-
-    static {
-        f = new JFrame();
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        f.pack();
-        f.setTitle("Training Data");
-        f.setSize(1200, 800);
-
-        RefineryUtilities.centerFrameOnScreen(f);
-        f.setVisible(true);
-    }
-
-
-    //    private static FileWriter fileWriter;
-//    private int messageCount = 0;
     ArrayList<PriceData> priceData = new ArrayList<PriceData>();
-    int messageCnt = 0;
+    String file = "./data/all.txt";
+    static final String MARKET="DOGE_BTC";
+    int fileSizeLimit=1000;
 
-    private static Object waitLock = new Object();
-
-    @OnMessage
-    public synchronized void onMessage(String message) {
-//the new USD rate arrives from the websocket server side.
-        String[] parsed = message.split("\n");
-        for (String s : parsed) {
-            System.out.println(s);
-            String[] bb = s.split(",");
-            priceData.add(new PriceData(bb));
-            String out = (Long.parseLong(bb[0])) + "," + Double.parseDouble(bb[1]) + "," + (Double.parseDouble(bb[2]));
-            messageCnt++;
-            System.out.println(messageCnt + "\t" + out);
-        }
-
-    }
-
-
-    public static long maximumKey(int j, long[] ar) {
-        long max = 0;
-        for (int i = j; i < ar.length; i++) {
-            if (max < ar[i])
-                max = ar[i];
-        }
-        return max;
-    }
-
-
-
-    private static void wait4TerminateSignal() {
-        synchronized (waitLock) {
-            try {
-                waitLock.wait();
-            } catch (InterruptedException e) {
+    public LocalDataListen() {
+        ArrayList<String> stringlist=new ArrayList<>();
+        try {
+            Scanner sc=new Scanner(new File(file));
+            while(sc.hasNext()){
+                stringlist.add(sc.nextLine());
             }
+            if (stringlist.size()>fileSizeLimit) {
+                while (stringlist.size() > fileSizeLimit) stringlist.remove(0);
+                sc.close();
+                PrintWriter out = new PrintWriter(file);
+                for (String s:stringlist){
+                    out.println(s);
+                }
+                out.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+      /*  Scanner sc=null;
+        try {
+            sc=new Scanner(new File(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        ArrayList<PriceData> priceData = new ArrayList<PriceData>();
+        while(sc.hasNextLine()){
+            String line=sc.nextLine();
+            String[] bbb=line.split(",");
+            PriceData pd=new PriceData(bbb);
+            priceData.add(pd);
+        }*/
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        // IMPORTANT: Save the old System.out!
+        PrintStream old = System.out;
+        // Tell Java to use your special stream
+        System.setOut(ps);
+        final boolean[] run = {true};
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String oldString = null;
+                while (run[0]) {
+                    String output = baos.toString();
+                    if (!output.equals(oldString)) {
+                        oldString = output;
+                        String[] split = output.split("\n");
+//                        System.err.println(split.length);
+                        for (String s:split)
+                        if (s.contains("all.txt")&&s.contains("prediction")&&!s.contains("_")){
+                            System.setOut(old);
+                            String prediction=s.substring(s.indexOf(": ")+2);
+                            System.out.println(prediction);
+                            predict(prediction);
+                            run[0] =false;
+                        }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+        try {
+            MainModified.main(new String[]{});
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        System.out.println("ended");
+//        System.setOut(old);
+//        String output=baos.toString();
+//        System.out.println(output);
+//        String[] split=output.split("\n");
+//        System.out.println(split.length);
+//        System.out.println(output);
+//        String nextPos=split[2].substring(split[2].indexOf(":")+1);
+//        System.out.println(nextPos);
+    }
+
+    private void predict(String prediction) {
+        if (prediction==null || prediction.equals("OUT"))return;
+        ArrayList<Balance> balances=Http.getBalances();
+        double dogecoin=-1;
+        double bitcoin=-1;
+        for (Balance b:balances){
+            if (b.getCurrency().equals("BTC"))bitcoin=b.getAvailable();
+            if (b.getCurrency().equals("DOGE"))dogecoin=b.getAvailable();
+        }
+        System.out.println("DOGE:"+dogecoin+"\t"+"BTC:"+bitcoin);
+        dogecoin/=10;
+        bitcoin/=10;
+        HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
+        ArrayList<Market> markets = new ArrayList<Market>();
+        ArrayList<Market> temp2 = new ArrayList<Market>();
+        try {
+            temp2 = Http.getMarkets();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ArrayList<Market> temp3 = new ArrayList<Market>();
+        for (Market m : temp2) {
+            if (m.getIsActive()) temp3.add(m);
+        }
+        markets.clear();
+        markets.addAll(temp3);
+
+        ArrayList<String> al = new ArrayList<String>();
+        Market msaved=null;
+        for (Market m : markets) {
+            al.add(m.getMarketName());
+            if (m.getMarketName().equals(MARKET))msaved=m;
+        }
+        ArrayList<Ticker> tickers = Http.getTickers(al);
+        for (int i = 0; i < tickers.size(); i++) {
+            tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
+        }
+
+        System.out.println(msaved);
+        if (prediction.equals("UP")){      //BUY
+            double cc=bitcoin/tickerHM.get(MARKET).getAsk();
+            Http.buyselllimit(MARKET,tickerHM.get(MARKET).getAsk(),cc,true);
+        }
+        if (prediction.equals("DOWN")){    //SELL
+            Http.buyselllimit(MARKET,tickerHM.get(MARKET).getBid(),dogecoin,false);
         }
     }
 
     public static void main(String[] args) {
-        WebSocketContainer container = null;//
-        Session session = null;
-        try {
-            //Tyrus is plugged via ServiceLoader API. See notes above
-            container = ContainerProvider.getWebSocketContainer();
-//WS1 is the context-root of my web.app 
-//ratesrv is the  path given in the ServerEndPoint annotation on server implementation
-            session = container.connectToServer(BleutradeDataListen.class, URI.create("ws://ec2-52-91-187-205.compute-1.amazonaws.com:9001"));
-            wait4TerminateSignal();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        new LocalDataListen();
     }
 }

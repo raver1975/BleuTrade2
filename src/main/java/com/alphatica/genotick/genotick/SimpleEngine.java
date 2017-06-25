@@ -38,7 +38,7 @@ public class SimpleEngine implements Engine {
 
     @Override
     public List<TimePointStats> start() {
-        Thread.currentThread().setName("Main engine execution thread");
+        Thread.currentThread().setName("MainModified engine execution thread");
         double result = 1;
         initPopulation();
         TimePoint timePoint = new TimePoint(engineSettings.startTimePoint);
