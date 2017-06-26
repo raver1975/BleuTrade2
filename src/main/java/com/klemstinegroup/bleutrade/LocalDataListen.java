@@ -96,7 +96,7 @@ public class LocalDataListen {
                         if (final1) {
                             for (String s : split) {
                                 if (s.contains("all.txt") && s.contains("prediction") && !s.contains("_")) {
-
+                                    System.setOut(old);
                                     String prediction = s.substring(s.indexOf(": ") + 2);
                                     System.out.println(prediction);
                                     predict(prediction);
