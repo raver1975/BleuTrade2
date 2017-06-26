@@ -88,7 +88,7 @@ public class LocalDataListen {
                     }
                     if (!output.equals(oldString)) {
                         lastTime = System.currentTimeMillis();
-                        System.err.println(output.substring(oldString.length()));
+                        System.err.print(output.substring(oldString.length()));
                         oldString = output;
                         String[] split = output.split("\n");
 //                        System.err.println(split.length);
