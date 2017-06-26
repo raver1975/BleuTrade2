@@ -80,6 +80,7 @@ public class LocalDataListen {
                     String output = baos.toString();
                     if (System.currentTimeMillis() - lastTime > 600000) {
                         run[0] = false;
+                        break top;
                     }
                     if (System.currentTimeMillis() - lastTime > 60000) {
                         final1 = true;
@@ -87,6 +88,7 @@ public class LocalDataListen {
                     }
                     if (!output.equals(oldString)) {
                         lastTime = System.currentTimeMillis();
+
                         oldString = output;
                         String[] split = output.split("\n");
 //                        System.err.println(split.length);
@@ -99,7 +101,7 @@ public class LocalDataListen {
                                     System.out.println(prediction);
                                     predict(prediction);
                                     run[0] = false;
-                                    break;
+                                    break top;
                                 }
 
                             }
