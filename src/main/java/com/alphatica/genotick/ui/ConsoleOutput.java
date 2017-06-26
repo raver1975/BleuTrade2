@@ -1,12 +1,9 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
-import com.klemstinegroup.bleutrade.CircleDrawer;
-import org.apache.commons.io.FileUtils;
 //import org.jfree.chart.ChartFactory;
 //import org.jfree.chart.ChartPanel;
 //import org.jfree.chart.ChartUtilities;
@@ -17,13 +14,8 @@ import org.apache.commons.io.FileUtils;
 //import org.jfree.chart.plot.PlotOrientation;
 //import org.jfree.chart.plot.XYPlot;
 //import org.jfree.data.xy.XYDataItem;
-import org.jfree.data.xy.XYSeriesCollection;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
 
 class ConsoleOutput implements UserOutput {
 

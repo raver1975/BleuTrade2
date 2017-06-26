@@ -1,7 +1,6 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 
@@ -12,7 +11,7 @@ class ConsoleInput extends BasicUserInput {
     private final Console console;
 
     ConsoleInput() {
-        console = System.console();
+        console = null;//System.console();
         if(console == null) {
             throw new RuntimeException("Unable to create system console");
         }
@@ -20,7 +19,7 @@ class ConsoleInput extends BasicUserInput {
 
     @Override
     public MainSettings getSettings() {
-        String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
+        String dataDirectory = getString("Data directory", "data");
         MainAppData data = getData(dataDirectory);
         MainSettings settings = MainSettings.getSettings();
         settings.dataSettings = dataDirectory;

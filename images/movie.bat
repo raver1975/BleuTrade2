@@ -1,1 +1,0 @@
-c:\ffmpeg\bin\ffmpeg -y -r 5 -f image2 -s 800x600 -start_number 40 -i imageChart%%d.png -vcodec libx264 -crf 0 -pix_fmt yuv420p test.mp4

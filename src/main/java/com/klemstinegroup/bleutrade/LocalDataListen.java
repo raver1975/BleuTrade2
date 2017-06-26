@@ -4,31 +4,43 @@ import com.alphatica.genotick.genotick.MainModified;
 import com.klemstinegroup.bleutrade.json.Balance;
 import com.klemstinegroup.bleutrade.json.Market;
 import com.klemstinegroup.bleutrade.json.Ticker;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class LocalDataListen {
 
     ArrayList<PriceData> priceData = new ArrayList<PriceData>();
     String file = "./data/all.txt";
-    static final String MARKET="DOGE_BTC";
-    int fileSizeLimit=1000;
+    static final String MARKET = "DOGE_BTC";
+    int fileSizeLimit = 1000;
 
     public LocalDataListen() {
-        ArrayList<String> stringlist=new ArrayList<>();
+        File[] list = new File(".").listFiles();
+
+        for (File f : list) {
+            if (f.isDirectory() && f.toPath().toString().contains("savedPopulation")) {
+                try {
+                    FileUtils.deleteDirectory(f);
+                    System.out.println("Deleted dir:" + f);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        ArrayList<String> stringlist = new ArrayList<>();
         try {
-            Scanner sc=new Scanner(new File(file));
-            while(sc.hasNext()){
+            Scanner sc = new Scanner(new File(file));
+            while (sc.hasNext()) {
                 stringlist.add(sc.nextLine());
             }
-            if (stringlist.size()>fileSizeLimit) {
+            if (stringlist.size() > fileSizeLimit) {
                 while (stringlist.size() > fileSizeLimit) stringlist.remove(0);
                 sc.close();
                 PrintWriter out = new PrintWriter(file);
-                for (String s:stringlist){
+                for (String s : stringlist) {
                     out.println(s);
                 }
                 out.close();
@@ -62,19 +74,35 @@ public class LocalDataListen {
             @Override
             public void run() {
                 String oldString = null;
-                while (run[0]) {
+                long lastTime = System.currentTimeMillis();
+                boolean final1 = false;
+                top:while (run[0]) {
                     String output = baos.toString();
+                    if (System.currentTimeMillis() - lastTime > 600000) {
+                        run[0] = false;
+                    }
+                    if (System.currentTimeMillis() - lastTime > 60000) {
+                        final1 = true;
+                        oldString = null;
+                    }
                     if (!output.equals(oldString)) {
+                        lastTime = System.currentTimeMillis();
                         oldString = output;
                         String[] split = output.split("\n");
 //                        System.err.println(split.length);
-                        for (String s:split)
-                        if (s.contains("all.txt")&&s.contains("prediction")&&!s.contains("_")){
-                            System.setOut(old);
-                            String prediction=s.substring(s.indexOf(": ")+2);
-                            System.out.println(prediction);
-                            predict(prediction);
-                            run[0] =false;
+                        Collections.reverse(Arrays.asList(split));
+                        if (final1) {
+                            for (String s : split) {
+                                if (s.contains("all.txt") && s.contains("prediction") && !s.contains("_")) {
+                                    System.setOut(old);
+                                    String prediction = s.substring(s.indexOf(": ") + 2);
+                                    System.out.println(prediction);
+                                    predict(prediction);
+                                    run[0] = false;
+                                    break;
+                                }
+
+                            }
                         }
                     }
                     try {
@@ -105,17 +133,17 @@ public class LocalDataListen {
     }
 
     private void predict(String prediction) {
-        if (prediction==null || prediction.equals("OUT"))return;
-        ArrayList<Balance> balances=Http.getBalances();
-        double dogecoin=-1;
-        double bitcoin=-1;
-        for (Balance b:balances){
-            if (b.getCurrency().equals("BTC"))bitcoin=b.getAvailable();
-            if (b.getCurrency().equals("DOGE"))dogecoin=b.getAvailable();
+        if (prediction == null || prediction.equals("OUT")) return;
+        ArrayList<Balance> balances = Http.getBalances();
+        double dogecoin = -1;
+        double bitcoin = -1;
+        for (Balance b : balances) {
+            if (b.getCurrency().equals("BTC")) bitcoin = b.getAvailable();
+            if (b.getCurrency().equals("DOGE")) dogecoin = b.getAvailable();
         }
-        System.out.println("DOGE:"+dogecoin+"\t"+"BTC:"+bitcoin);
-        dogecoin/=10;
-        bitcoin/=10;
+        System.out.println("DOGE:" + dogecoin + "\t" + "BTC:" + bitcoin);
+        dogecoin /= 10;
+        bitcoin /= 10;
         HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
         ArrayList<Market> markets = new ArrayList<Market>();
         ArrayList<Market> temp2 = new ArrayList<Market>();
@@ -132,10 +160,10 @@ public class LocalDataListen {
         markets.addAll(temp3);
 
         ArrayList<String> al = new ArrayList<String>();
-        Market msaved=null;
+        Market msaved = null;
         for (Market m : markets) {
             al.add(m.getMarketName());
-            if (m.getMarketName().equals(MARKET))msaved=m;
+            if (m.getMarketName().equals(MARKET)) msaved = m;
         }
         ArrayList<Ticker> tickers = Http.getTickers(al);
         for (int i = 0; i < tickers.size(); i++) {
@@ -143,12 +171,12 @@ public class LocalDataListen {
         }
 
         System.out.println(msaved);
-        if (prediction.equals("UP")){      //BUY
-            double cc=bitcoin/tickerHM.get(MARKET).getAsk();
-            Http.buyselllimit(MARKET,tickerHM.get(MARKET).getAsk(),cc,true);
+        if (prediction.equals("UP")) {      //BUY
+            double cc = bitcoin / tickerHM.get(MARKET).getAsk();
+            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getAsk(), cc, true);
         }
-        if (prediction.equals("DOWN")){    //SELL
-            Http.buyselllimit(MARKET,tickerHM.get(MARKET).getBid(),dogecoin,false);
+        if (prediction.equals("DOWN")) {    //SELL
+            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getBid(), dogecoin, false);
         }
     }
 

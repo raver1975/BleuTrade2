@@ -1,7 +1,6 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -20,7 +19,7 @@ class RandomParametersInput extends BasicUserInput {
         defaults.requireSymmetricalRobots = true;
         defaults.killNonPredictingRobots = true;
         defaults.performTraining = true;
-        MainAppData data = getData(Main.DEFAULT_DATA_DIR);
+        MainAppData data = getData( "data");
         assignTimePoints(defaults, data);
         return assignRandom(defaults);
     }

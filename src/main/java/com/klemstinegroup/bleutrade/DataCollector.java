@@ -26,7 +26,6 @@ public class DataCollector {
 
     public DataCollector(){
         getSecret();
-        startStdinListener();
         if (!new File("./data").exists())new File("./data").mkdir();
 
         while (true) {
@@ -167,10 +166,14 @@ public class DataCollector {
                 hm.put(g2 + "_" + g1, 1d / tickers.get(i).getAsk());
             }
             System.out.println("time=" + new Date());
-            long timeNow=System.currentTimeMillis();
-            new LocalDataListen();
-            timeNow=System.currentTimeMillis()-timeNow;
-            long sleep=timeout*1000l-timeNow;
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    new LocalDataListen();
+                }
+            }).start();
+            long sleep=timeout*1000l;
             if (sleep<1000)sleep=1000;
             System.out.println("waiting for "+timeout+"s" );
             try {
@@ -207,66 +210,6 @@ public class DataCollector {
         }
     }
 
-    public void startStdinListener(){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                while (true) {
-                    try {
-                        String line = br.readLine();
-                        if (line != null) {
-                            if (line.equals("exit")) {
-                                System.exit(0);
-                            }
-                            if (line.equals(" ")) {
-//                                refresh = true;
-                            }
-                            if (line.startsWith("buy ")) {
-//                                buy(line);
-                            }
-
-
-                            if (line.startsWith("sell ")) {
-//                                sell(line);
-                            }
-                            if (line.startsWith("reset")) {
-                                String market = line.substring(6);
-
-                                ArrayList<Order> remove = new ArrayList<Order>();
-//                                for (Order o : history) {
-//                                    System.out.println(":" + market + ":" + o.getExchange());
-//                                    if (o.getExchange().startsWith(market + "_")) {
-//                                        System.out.println("removing " + o.getExchange());
-//                                        remove.add(o);
-//                                    }
-//                                }
-//                                for (Order o : remove) history.remove(o);
-//                                try {
-//                                    Serializer.saveHistory(history);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                                System.out.println("Removed all " + market);
-                            }
-
-                        }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        }).start();
-    }
     public static void main(String[] args) throws Exception {
         new DataCollector();
 

@@ -12,7 +12,7 @@ public class MainSettings {
     public TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
     public String populationDAO = "";
     public boolean performTraining = true;
-    public String dataSettings = Main.DEFAULT_DATA_DIR;
+    public String dataSettings = "data";
     public int populationDesiredSize = 20_000;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
