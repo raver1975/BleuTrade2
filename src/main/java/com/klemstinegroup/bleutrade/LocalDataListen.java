@@ -73,7 +73,7 @@ public class LocalDataListen {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String oldString = null;
+                String oldString = "";
                 long lastTime = System.currentTimeMillis();
                 boolean final1 = false;
                 top:while (run[0]) {
@@ -84,11 +84,11 @@ public class LocalDataListen {
                     }
                     if (System.currentTimeMillis() - lastTime > 60000) {
                         final1 = true;
-                        oldString = null;
+                        oldString = "";
                     }
                     if (!output.equals(oldString)) {
                         lastTime = System.currentTimeMillis();
-
+                        System.err.println(output.substring(oldString.length()));
                         oldString = output;
                         String[] split = output.split("\n");
 //                        System.err.println(split.length);
