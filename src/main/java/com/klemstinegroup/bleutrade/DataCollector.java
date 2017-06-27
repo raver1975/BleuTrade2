@@ -4,7 +4,9 @@ import com.klemstinegroup.bleutrade.json.*;
 import com.klemstinegroup.bleutrade.json.Currency;
 
 import java.io.*;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -22,6 +24,7 @@ public class DataCollector {
     static DecimalFormat dfdollars = new DecimalFormat("+0000.00;-0000.00");
     static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
     private long timeout;
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
     public DataCollector(){
@@ -181,7 +184,7 @@ public class DataCollector {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("-------------------------------------------------------------------------------------------------");
+            System.out.println(dateFormat.format(new Date())+"\t"+"-------------------------------------------------------------------------------------------------");
 
 
 

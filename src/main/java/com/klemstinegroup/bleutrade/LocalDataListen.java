@@ -7,6 +7,8 @@ import com.klemstinegroup.bleutrade.json.Ticker;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LocalDataListen {
@@ -15,6 +17,7 @@ public class LocalDataListen {
     String file = "./data/all.txt";
     static final String MARKET = "DOGE_BTC";
     int fileSizeLimit = 1000;
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public LocalDataListen() {
         File[] list = new File(".").listFiles();
@@ -101,7 +104,7 @@ public class LocalDataListen {
                                 if (s.contains("all.txt") && s.contains("prediction") && !s.contains("reverse_all.txt")) {
                                     System.setOut(old);
                                     String prediction = s.substring(s.indexOf(": ") + 2);
-                                    System.out.println("PREDICTION: "+prediction);
+                                    System.out.println("PREDICTION: "+prediction+"\t"+dateFormat.format(new Date()));
                                     predict(prediction);
                                     break top;
                                 }
