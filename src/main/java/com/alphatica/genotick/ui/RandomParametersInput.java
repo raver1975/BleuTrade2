@@ -16,7 +16,7 @@ class RandomParametersInput extends BasicUserInput {
     public MainSettings getSettings() {
         MainSettings defaults = MainSettings.getSettings();
         defaults.populationDAO = "";
-        defaults.requireSymmetricalRobots = true;
+        defaults.requireSymmetricalRobots = false;
         defaults.killNonPredictingRobots = true;
         defaults.performTraining = true;
         MainAppData data = getData( "data");
