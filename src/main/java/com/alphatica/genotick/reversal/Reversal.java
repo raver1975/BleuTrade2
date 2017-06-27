@@ -94,9 +94,10 @@ public class Reversal {
         // Column 0 is unchanged
         reversed[0] = table[0];
         // Column 1. Rewrite if first line
-        for (int i=1;i<table.length;i++) {
-            reversed[i] = 1d / table[table.length-i].doubleValue();
-        }
+//        for (int i=1;i<table.length;i++) {
+            reversed[1] = 1d / table[1].doubleValue();
+            reversed[2] = 1d / table[2].doubleValue();
+//        }
 
             return reversed;
     }
