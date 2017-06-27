@@ -69,41 +69,42 @@ public class LocalDataListen {
         PrintStream old = System.out;
         // Tell Java to use your special stream
         System.setOut(ps);
-        final boolean[] run = {true};
+//        final boolean[] run = {true};
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String oldString = "";
                 long lastTime = System.currentTimeMillis();
-                boolean final1 = false;
-                top:while (run[0]) {
+//                boolean final1 = false;
+                boolean run = true;
+                top:
+                while (run) {
                     String output = baos.toString();
                     if (System.currentTimeMillis() - lastTime > 1200000) {
-                        run[0] = false;
+                        System.setOut(old);
+                        System.out.println("Genotick timed out!");
                         break top;
                     }
-                    if (System.currentTimeMillis() - lastTime > 300000) {
-                        final1 = true;
-                        oldString = "";
-                    }
+//                    if (System.currentTimeMillis() - lastTime > 300000) {
+//                        final1 = true;
+//                        oldString = "";
+//                    }
                     if (!output.equals(oldString)) {
                         lastTime = System.currentTimeMillis();
-                        System.err.print(output.substring(oldString.length()));
+//                        System.err.print(output.substring(oldString.length()));
                         oldString = output;
                         String[] split = output.split("\n");
 //                        System.err.println(split.length);
                         Collections.reverse(Arrays.asList(split));
-                        if (final1) {
+                        if (split[0].startsWith("ended")) {
                             for (String s : split) {
-                                if (s.contains("all.txt") && s.contains("prediction") && !s.contains("_")) {
+                                if (s.contains("all.txt") && s.contains("prediction") && !s.contains("reverse_all.txt")) {
                                     System.setOut(old);
                                     String prediction = s.substring(s.indexOf(": ") + 2);
-                                    System.out.println(prediction);
+                                    System.out.println("PREDICTION: "+prediction);
                                     predict(prediction);
-                                    run[0] = false;
                                     break top;
                                 }
-
                             }
                         }
                     }

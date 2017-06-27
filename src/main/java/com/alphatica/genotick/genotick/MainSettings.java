@@ -13,7 +13,7 @@ public class MainSettings {
     public String populationDAO = "";
     public boolean performTraining = true;
     public String dataSettings = "data";
-    public int populationDesiredSize = 20_000;
+    public int populationDesiredSize = 10_000;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.1;
