@@ -78,11 +78,11 @@ public class LocalDataListen {
                 boolean final1 = false;
                 top:while (run[0]) {
                     String output = baos.toString();
-                    if (System.currentTimeMillis() - lastTime > 600000) {
+                    if (System.currentTimeMillis() - lastTime > 1200000) {
                         run[0] = false;
                         break top;
                     }
-                    if (System.currentTimeMillis() - lastTime > 60000) {
+                    if (System.currentTimeMillis() - lastTime > 300000) {
                         final1 = true;
                         oldString = "";
                     }
