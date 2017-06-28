@@ -94,7 +94,7 @@ public class LocalDataListen {
 //                    }
                     if (!output.equals(oldString)) {
                         lastTime = System.currentTimeMillis();
-//                        System.err.print(output.substring(oldString.length()));
+                        System.err.print(output.substring(oldString.length()));
                         oldString = output;
                         String[] split = output.split("\n");
 //                        System.err.println(split.length);
@@ -103,8 +103,12 @@ public class LocalDataListen {
                             for (String s : split) {
                                 if (s.contains("all.txt") && s.contains("prediction") && !s.contains("reverse_all.txt")) {
                                     System.setOut(old);
+                                    System.out.println("--------");
                                     String prediction = s.substring(s.indexOf(": ") + 2);
-                                    System.out.println("PREDICTION: "+prediction+"\t"+dateFormat.format(new Date()));
+                                    if (prediction.startsWith("OUT")) prediction = "OUT";
+                                    if (prediction.startsWith("DOWN")) prediction = "DOWN";
+                                    if (prediction.startsWith("UP")) prediction = "UP";
+                                    System.out.println("PREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
                                     predict(prediction);
                                     break top;
                                 }
