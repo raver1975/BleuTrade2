@@ -32,43 +32,13 @@ public class DataCollector {
         if (!new File("./data").exists())new File("./data").mkdir();
 
         while (true) {
-            ArrayList<Currency> temp1 = null;
             try {
-                temp1 = Http.getCurrencies();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (temp1 == null) {
-                System.out.println("Connection problems?");
-                int cnt = 60;
+                ArrayList<Currency> temp1 = null;
                 try {
-                    while (cnt > 0) {
-                        System.out.print((cnt--) + " ");
-                        Thread.sleep(1000);
-                    }
-                    System.out.println();
-                    continue;
+                    temp1 = Http.getCurrencies();
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
-            }
-            ArrayList<Currency> temp = new ArrayList<Currency>();
-            for (Currency c : temp1) {
-                if (c.getIsActive() && !c.getMaintenanceMode()) temp.add(c);
-            }
-            currencies.clear();
-            currencies.addAll(temp);
-            for (Currency c : currencies) {
-                currencyCost.put(c.getCurrency(), c.getTxFee());
-            }
-
-            ArrayList<Market> temp2 = null;
-            try {
-                temp2 = Http.getMarkets();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (temp2 == null) {
                 if (temp1 == null) {
                     System.out.println("Connection problems?");
                     int cnt = 60;
@@ -83,55 +53,86 @@ public class DataCollector {
 
                     }
                 }
-            }
-            ArrayList<Market> temp3 = new ArrayList<Market>();
-            for (Market m : temp2) {
-                if (m.getIsActive()) temp3.add(m);
-            }
-            markets.clear();
-            markets.addAll(temp3);
-
-            ArrayList<String> al = new ArrayList<String>();
-            for (Market m : markets) {
-                al.add(m.getMarketName());
-            }
-            try {
-                tickers = Http.getTickers(al);
-                for (int i = 0; i < tickers.size(); i++) {
-                    tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
+                ArrayList<Currency> temp = new ArrayList<Currency>();
+                for (Currency c : temp1) {
+                    if (c.getIsActive() && !c.getMaintenanceMode()) temp.add(c);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (tickers == null || tickerHM == null || tickerHM.isEmpty()) {
-                if (temp1 == null) {
-                    System.out.println("Connection problems?");
-                    int cnt = 60;
-                    try {
-                        while (cnt > 0) {
-                            System.out.print((cnt--) + " ");
-                            Thread.sleep(1000);
-                        }
-                        System.out.println();
-                        continue;
-                    } catch (Exception e) {
+                currencies.clear();
+                currencies.addAll(temp);
+                for (Currency c : currencies) {
+                    currencyCost.put(c.getCurrency(), c.getTxFee());
+                }
 
+                ArrayList<Market> temp2 = null;
+                try {
+                    temp2 = Http.getMarkets();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (temp2 == null) {
+                    if (temp1 == null) {
+                        System.out.println("Connection problems?");
+                        int cnt = 60;
+                        try {
+                            while (cnt > 0) {
+                                System.out.print((cnt--) + " ");
+                                Thread.sleep(1000);
+                            }
+                            System.out.println();
+                            continue;
+                        } catch (Exception e) {
+
+                        }
                     }
                 }
-            }
+                ArrayList<Market> temp3 = new ArrayList<Market>();
+                for (Market m : temp2) {
+                    if (m.getIsActive()) temp3.add(m);
+                }
+                markets.clear();
+                markets.addAll(temp3);
 
-            long time = System.currentTimeMillis();
-            String allout = "";
-            String btcdge = "";
-            for (String s : tickerHM.keySet()) {
-                String g1 = s.substring(0, s.indexOf('_'));
-                String g2 = s.substring(s.indexOf('_') + 1);
-                Ticker t = tickerHM.get(s);
-                if (t == null) continue;
-                double bid = t.getBid();
-                double ask = t.getAsk();
-                double last = 0;
-                if (t.getLast() != null) last = t.getLast();
+                ArrayList<String> al = new ArrayList<String>();
+                for (Market m : markets) {
+                    al.add(m.getMarketName());
+                }
+                try {
+                    tickers = Http.getTickers(al);
+                    for (int i = 0; i < tickers.size(); i++) {
+                        tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (tickers == null || tickerHM == null || tickerHM.isEmpty()) {
+                    if (temp1 == null) {
+                        System.out.println("Connection problems?");
+                        int cnt = 60;
+                        try {
+                            while (cnt > 0) {
+                                System.out.print((cnt--) + " ");
+                                Thread.sleep(1000);
+                            }
+                            System.out.println();
+                            continue;
+                        } catch (Exception e) {
+
+                        }
+                    }
+                }
+
+                long time = System.currentTimeMillis();
+                String allout = "";
+                String btcdge = "";
+                for (String s : tickerHM.keySet()) {
+                    String g1 = s.substring(0, s.indexOf('_'));
+                    String g2 = s.substring(s.indexOf('_') + 1);
+                    Ticker t = tickerHM.get(s);
+                    if (t == null) continue;
+                    double bid = t.getBid();
+                    double ask = t.getAsk();
+                    double last = 0;
+                    if (t.getLast() != null) last = t.getLast();
 //                try {
 //                    String writeOut=time+","+dfcoins.format(bid)+","+dfcoins.format(ask)+"\n";
                     if ((g1.equals("DOGE")) && (g2.equals("BTC"))) {
@@ -145,41 +146,43 @@ public class DataCollector {
 //                    e.printStackTrace();
 //                }
 //                saved.add(new TickerData(g1, g2, bid, ask, last, time));
-            }
-//
-            FileWriter fwall = null;
-            try
-            {
-                fwall = new FileWriter(new File("./data/all.txt"), true);
-                fwall.write(btcdge + allout + "\n");
-                fwall.close();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            HashMap<String, Double> hm = new HashMap<String, Double>();
-
-            for (int i = 0; i < markets.size(); i++) {
-                Market m = markets.get(i);
-                String g = m.getMarketName();
-                hm.put(g, tickers.get(i).getAsk());
-                String g1 = g.substring(0, g.indexOf('_'));
-                String g2 = g.substring(g.indexOf('_') + 1);
-                hm.put(g2 + "_" + g1, 1d / tickers.get(i).getAsk());
-            }
-            System.out.println("time=" + new Date());
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    new LocalDataListen();
                 }
-            }).start();
-            long sleep=timeout*1000l;
-            if (sleep<1000)sleep=1000;
-            System.out.println("waiting for "+timeout+"s" );
+//
+                FileWriter fwall = null;
+                try {
+                    fwall = new FileWriter(new File("./data/all.txt"), true);
+                    fwall.write(btcdge + allout + "\n");
+                    fwall.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                HashMap<String, Double> hm = new HashMap<String, Double>();
+
+                for (int i = 0; i < markets.size(); i++) {
+                    Market m = markets.get(i);
+                    String g = m.getMarketName();
+                    hm.put(g, tickers.get(i).getAsk());
+                    String g1 = g.substring(0, g.indexOf('_'));
+                    String g2 = g.substring(g.indexOf('_') + 1);
+                    hm.put(g2 + "_" + g1, 1d / tickers.get(i).getAsk());
+                }
+                System.out.println("time=" + new Date());
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new LocalDataListen();
+                    }
+                }).start();
+
+                System.out.println("waiting for " + timeout + "s");
+            }
+            catch (Exception ee){
+                ee.printStackTrace();
+            }
             try {
+                long sleep = timeout * 1000l;
+                if (sleep < 1000) sleep = 1000;
                 Thread.sleep(sleep);
             } catch (InterruptedException e) {
                 e.printStackTrace();
