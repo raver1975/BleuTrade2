@@ -15,8 +15,11 @@ public class LocalDataListen {
 
     ArrayList<PriceData> priceData = new ArrayList<PriceData>();
     String file = "./data/all.txt";
-    static final String MARKET = "DOGE_BTC";
-    int fileSizeLimit = 1000;
+//    static final String MARKET = "ETH_BTC";
+    static String COIN1 ="ETH";
+    static String COIN2 ="BTC";
+    static String MARKET=COIN1+"_"+COIN2;
+    int dataSizeLimit = 256;  //Same as datamaximum offset in MainSettings
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public LocalDataListen() {
@@ -39,8 +42,8 @@ public class LocalDataListen {
             while (sc.hasNext()) {
                 stringlist.add(sc.nextLine());
             }
-            if (stringlist.size() > fileSizeLimit) {
-                while (stringlist.size() > fileSizeLimit) stringlist.remove(0);
+            if (stringlist.size() > dataSizeLimit) {
+                while (stringlist.size() > dataSizeLimit) stringlist.remove(0);
                 sc.close();
                 PrintWriter out = new PrintWriter(file);
                 for (String s : stringlist) {
@@ -150,10 +153,10 @@ public class LocalDataListen {
         double dogecoin = -1;
         double bitcoin = -1;
         for (Balance b : balances) {
-            if (b.getCurrency().equals("BTC")) bitcoin = b.getAvailable();
-            if (b.getCurrency().equals("DOGE")) dogecoin = b.getAvailable();
+            if (b.getCurrency().equals(COIN2)) bitcoin = b.getAvailable();
+            if (b.getCurrency().equals(COIN1)) dogecoin = b.getAvailable();
         }
-        System.out.println("DOGE:" + dogecoin + "\t" + "BTC:" + bitcoin);
+        System.out.println(COIN1 +":" + dogecoin + "\t" + COIN2 +":" + bitcoin);
         dogecoin /= 10;
         bitcoin /= 10;
         HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();

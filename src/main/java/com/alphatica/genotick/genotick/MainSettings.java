@@ -27,16 +27,13 @@ public class MainSettings {
     public double skipInstructionProbability = 0.01;
     public long minimumOutcomesToAllowBreeding = 50;
     public long minimumOutcomesBetweenBreeding = 50;
-    public boolean killNonPredictingRobots = false;
+    public boolean killNonPredictingRobots = true;
     public double randomRobotsAtEachUpdate = 0.002;
-    public double protectBestRobots = 0.01;
+    public double protectBestRobots = 0.02;
     public boolean requireSymmetricalRobots = true;
-    public double resultThreshold = 2;
+    public double resultThreshold = 1;
     public int ignoreColumns = 0;
 
-    private MainSettings() {
-        /* Empty */
-    }
     public static MainSettings getSettings() {
         return new MainSettings();
     }

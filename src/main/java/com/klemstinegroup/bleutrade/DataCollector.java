@@ -135,7 +135,7 @@ public class DataCollector {
                     if (t.getLast() != null) last = t.getLast();
 //                try {
 //                    String writeOut=time+","+dfcoins.format(bid)+","+dfcoins.format(ask)+"\n";
-                    if ((g1.equals("DOGE")) && (g2.equals("BTC"))) {
+                    if ((g1.equals(LocalDataListen.COIN1)) && (g2.equals(LocalDataListen.COIN2))) {
                         btcdge = time + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
                     }
                     allout = allout + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);

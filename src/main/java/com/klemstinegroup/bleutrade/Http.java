@@ -284,7 +284,7 @@ public class Http {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("market", market);
         params.put("rate", dfcoins.format(rate));
-        params.put("quantity", RnnTrader.dfcoins.format(quantity));
+        params.put("quantity", dfcoins.format(quantity));
 //        params.put("comments", comments);
         System.out.println("placing " + (buy ? "buy" : "sell") + " order:" + market + "\t" + dfcoins.format(rate) + "\t#" + dfcoins.format(quantity));
         if (debug) return 1;

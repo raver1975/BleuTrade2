@@ -46,9 +46,8 @@ public class Reversal {
         String reverseFileName = getReverseFileName(set.getName());
         File reverseFile = new File(reverseFileName);
         if(reverseFile.exists()) {
-            reverseFile.delete();
-//            output.warningMessage("File " + reverseFileName + " already exists. Not reversing " + set.getName());
-//            return;
+            output.warningMessage("File " + reverseFileName + " already exists. Not reversing " + set.getName());
+            return;
         }
         List<Number[]> original = getOriginalNumbers(set);
         List<Number[]> reverse = reverseList(original);
@@ -94,12 +93,28 @@ public class Reversal {
         // Column 0 is unchanged
         reversed[0] = table[0];
         // Column 1. Rewrite if first line
-//        for (int i=1;i<table.length;i++) {
-            reversed[1] = 1d / table[1].doubleValue();
-//            reversed[2] = 1d / table[2].doubleValue();
-//        }
-
-            return reversed;
+        if(lastOriginal == null) {
+            reversed[1] = table[1];
+        } else {
+            // Change by % if not first line
+            reversed[1] = getReverseValue(table[1],lastOriginal[1],lastReversed[1]);
+        }
+//        // Check if 4 columns here, because we need time, open, high, low to do swapping later.
+//        if(table.length < 4)
+//            return reversed;
+//        // Column 2. Change by % comparing to open
+//        // Write into 3 - we swap 2 & 3
+//        reversed[3] = getReverseValue(table[2], table[1], reversed[1]);
+//        // Column 3. Change by % comparing to open
+//        // Write into 2 - we swap 2 & 3
+//        reversed[2] = getReverseValue(table[3],table[1],reversed[1]);
+//        if(table.length == 4)
+//            return reversed;
+//        // Column 4. Change by % comparing to open.
+//        reversed[4] = getReverseValue(table[4],table[1],reversed[1]);
+//        // Rewrite rest
+        System.arraycopy(table, 2, reversed, 2, table.length - 2);
+        return reversed;
     }
 
     private static Number getReverseValue(Number from, Number to, Number compare) {
@@ -110,8 +125,8 @@ public class Reversal {
     private void writeReverseToFile(List<Number[]> reverse, String reversedFileName) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(reversedFileName))) {
             for(Number[] table: reverse) {
-                    String row = mkString(table, ",");
-                    bw.write(row + "\n");
+                String row = mkString(table,",");
+                bw.write(row + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,12 +137,10 @@ public class Reversal {
         StringBuilder sb = new StringBuilder();
         int count = 0;
         for(Number number: table) {
-            if (number!=null && !Double.valueOf(number.doubleValue()).isNaN()) {
-                sb.append(number);
-                count++;
-                if (count < table.length) {
-                    sb.append(string);
-                }
+            sb.append(number);
+            count++;
+            if(count < table.length) {
+                sb.append(string);
             }
         }
         return sb.toString();
