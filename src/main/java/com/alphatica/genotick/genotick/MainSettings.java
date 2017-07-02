@@ -8,31 +8,31 @@ import java.lang.reflect.Field;
 
 public class MainSettings {
 
-    public TimePoint startTimePoint = new TimePoint(0);
-    public TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
-    public String populationDAO = "";
-    public boolean performTraining = true;
-    public String dataSettings = "data";
-    public int populationDesiredSize = 10_000;
-    public int processorInstructionLimit = 256;
-    public double maximumDeathByAge = 0.01;
-    public double maximumDeathByWeight = 0.1;
-    public double probabilityOfDeathByAge = 0.5;
-    public double probabilityOfDeathByWeight = 0.5;
-    public double inheritedChildWeight = 0;
-    public int dataMaximumOffset = 256;
-    public int protectRobotsUntilOutcomes = 100;
-    public double newInstructionProbability = 0.01;
-    public double instructionMutationProbability = 0.01;
-    public double skipInstructionProbability = 0.01;
-    public long minimumOutcomesToAllowBreeding = 50;
-    public long minimumOutcomesBetweenBreeding = 50;
-    public boolean killNonPredictingRobots = true;
-    public double randomRobotsAtEachUpdate = 0.002;
-    public double protectBestRobots = 0.02;
-    public boolean requireSymmetricalRobots = true;
-    public double resultThreshold = 1;
-    public int ignoreColumns = 0;
+    public static TimePoint startTimePoint = new TimePoint(0);
+    public static TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
+    public static String populationDAO = "";
+    public static boolean performTraining = true;
+    public static String dataSettings = "data";
+    public static int populationDesiredSize = 5_000;
+    public static int processorInstructionLimit = 256;
+    public static double maximumDeathByAge = 0.01;
+    public static double maximumDeathByWeight = 0.1;
+    public static double probabilityOfDeathByAge = 0.5;
+    public static double probabilityOfDeathByWeight = 0.5;
+    public static double inheritedChildWeight = 0;
+    public static int dataMaximumOffset = 256;
+    public static int protectRobotsUntilOutcomes = 100;
+    public static double newInstructionProbability = 0.01;
+    public static double instructionMutationProbability = 0.01;
+    public static double skipInstructionProbability = 0.01;
+    public static long minimumOutcomesToAllowBreeding = 50;
+    public static long minimumOutcomesBetweenBreeding = 50;
+    public static boolean killNonPredictingRobots = true;
+    public static double randomRobotsAtEachUpdate = 0.002;
+    public static double protectBestRobots = 0.02;
+    public static boolean requireSymmetricalRobots = true;
+    public static double resultThreshold = 1;
+    public static int ignoreColumns = 0;
 
     public static MainSettings getSettings() {
         return new MainSettings();

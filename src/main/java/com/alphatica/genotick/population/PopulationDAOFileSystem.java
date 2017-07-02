@@ -99,8 +99,8 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     private void checkPath(String dao) {
         File file = new File(dao);
-        if(!file.exists())
-            throw new DAOException(String.format("Path '%s' does not exist.",dao));
+        if(!file.exists()){file.mkdir();}
+//            throw new DAOException(String.format("Path '%s' does not exist.",dao));
         if(!file.isDirectory())
             throw new DAOException(String.format("Path '%s' is not a directory.",dao));
         if(!file.canRead())

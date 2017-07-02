@@ -99,6 +99,10 @@ public class SimpleBreeder implements RobotBreeder {
             Robot parent2 = getPossibleParent(population, list);
             if (parent1 == null || parent2 == null)
                 break;
+            int nature1=parent1.getRobotNature();
+            int nature2=parent2.getRobotNature();
+            if (nature1*nature2<0)
+                continue;
             Robot child = Robot.createEmptyRobot(settings.dataMaximumOffset, settings.ignoreColumns);
             makeChild(parent1, parent2, child);
             population.saveRobot(child);

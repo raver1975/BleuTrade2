@@ -148,11 +148,14 @@ public class DataCollector {
 //                saved.add(new TickerData(g1, g2, bid, ask, last, time));
                 }
 //
-                FileWriter fwall = null;
+                FileWriter fwall1 = null;
                 try {
-                    fwall = new FileWriter(new File("./data/all.txt"), true);
-                    fwall.write(btcdge + allout + "\n");
-                    fwall.close();
+//                    fwall2 = new FileWriter(new File("./data/allcollection.txt1"), true);
+//                    fwall2.write(btcdge + allout + "\n");
+//                    fwall2.close();
+                    fwall1 = new FileWriter(new File("./data/all.txt"), true);
+                    fwall1.write(btcdge + allout + "\n");
+                    fwall1.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
