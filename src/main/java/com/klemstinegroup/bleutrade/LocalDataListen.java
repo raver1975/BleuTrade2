@@ -26,7 +26,7 @@ public class LocalDataListen {
 
     public LocalDataListen() {
         try {
-            if (new File("data/reverse_all.txt").exists()){
+            if (new File("data/reverse_all.txt").exists()) {
                 new File("data/reverse_all.txt").delete();
             }
             File[] list = new File(".").listFiles();
@@ -48,23 +48,18 @@ public class LocalDataListen {
                     Scanner sc = new Scanner(new File(file));
                     ArrayList<String> al = new ArrayList<>();
                     while (sc.hasNext()) al.add(sc.nextLine());
-                    String s = al.get(al.size()-1);
+                    String s = al.get(al.size() - 1);
                     String[] s1 = s.split(",");
                     MainSettings.startTimePoint = new TimePoint(Long.parseLong(s1[0]));
                     MainSettings.endTimePoint = new TimePoint(Long.MAX_VALUE);
-                    MainSettings.populationDAO="population";
+                    MainSettings.populationDAO = "population";
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-            }
-            else{
+            } else {
 
 
             }
-
-
-
-
 
 
             ArrayList<String> stringlist = new ArrayList<>();
@@ -143,6 +138,13 @@ public class LocalDataListen {
                                         if (prediction.startsWith("DOWN")) prediction = "DOWN";
                                         if (prediction.startsWith("UP")) prediction = "UP";
                                         System.out.println("PREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
+                                        try {
+                                            PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
+                                            pw.println(dateFormat.format(new Date()) + "\t" + prediction);
+                                            pw.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                         predict(prediction);
                                         break top;
                                     }
