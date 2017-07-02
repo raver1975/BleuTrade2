@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LocalDataListen {
-
+    PrintStream old = System.out;
     ArrayList<PriceData> priceData = new ArrayList<PriceData>();
     String file = "./data/all.txt";
     //    static final String MARKET = "ETH_BTC";
@@ -32,15 +32,16 @@ public class LocalDataListen {
             File[] list = new File(".").listFiles();
             for (File f : list) {
                 if (f.isDirectory() && f.toPath().toString().contains("savedPopulation")) {
-//                        try {
-//                            FileUtils.deleteDirectory(f);
-//                            System.out.println("Deleted dir:" + f);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-                    f.renameTo(new File("population"));
-                }
 
+                    File pop=new File("population");
+                    if (pop.exists() && pop.isDirectory()) {
+                        final File[] files = pop.listFiles();
+                        for (File ft : files) ft.delete();
+                        pop.delete();
+                    }
+                    boolean success=f.renameTo(new File("population"));
+                    System.out.println("Saved copy succeeded:"+success);
+                }
             }
 
             if (new File("population").exists()) {
@@ -52,7 +53,7 @@ public class LocalDataListen {
                     String[] s1 = s.split(",");
                     MainSettings.startTimePoint = new TimePoint(Long.parseLong(s1[0]));
                     MainSettings.endTimePoint = new TimePoint(Long.MAX_VALUE);
-                    MainSettings.populationDAO = "population";
+                    MainSettings.populationDAO = "populationDAO";
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -98,7 +99,7 @@ public class LocalDataListen {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             PrintStream ps = new PrintStream(baos);
             // IMPORTANT: Save the old System.out!
-            PrintStream old = System.out;
+
             // Tell Java to use your special stream
             System.setOut(ps);
 //        final boolean[] run = {true};
@@ -180,6 +181,7 @@ public class LocalDataListen {
 //        String nextPos=split[2].substring(split[2].indexOf(":")+1);
 //        System.out.println(nextPos);
         } catch (Exception e) {
+            System.setOut(old);
             e.printStackTrace();
         }
     }
