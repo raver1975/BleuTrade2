@@ -33,14 +33,14 @@ public class LocalDataListen {
             for (File f : list) {
                 if (f.isDirectory() && f.toPath().toString().contains("savedPopulation")) {
 
-                    File pop=new File("population");
+                    File pop = new File("population");
                     if (pop.exists() && pop.isDirectory()) {
                         final File[] files = pop.listFiles();
                         for (File ft : files) ft.delete();
                         pop.delete();
                     }
-                    boolean success=f.renameTo(new File("population"));
-                    System.out.println("Saved copy succeeded:"+success);
+                    boolean success = f.renameTo(new File("population"));
+                    System.out.println("Saved copy succeeded:" + success);
                 }
             }
 
@@ -131,14 +131,24 @@ public class LocalDataListen {
                             Collections.reverse(Arrays.asList(split));
                             if (split[0].startsWith("ended")) {
                                 for (String s : split) {
+
+
                                     if (s.contains("all.txt") && s.contains("prediction") && !s.contains("reverse_all.txt")) {
                                         System.setOut(old);
                                         System.out.println("--------");
+
+                                        double finalResult=-1;
+                                        try {
+                                            String[] pp = split[1].split(": ");
+                                            finalResult=Double.parseDouble(pp[1]);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                         String prediction = s.substring(s.indexOf(": ") + 2);
                                         if (prediction.startsWith("OUT")) prediction = "OUT";
                                         if (prediction.startsWith("DOWN")) prediction = "DOWN";
                                         if (prediction.startsWith("UP")) prediction = "UP";
-                                        System.out.println("PREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
+                                        System.out.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
                                         try {
                                             PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
                                             pw.println(dateFormat.format(new Date()) + "\t" + prediction);
