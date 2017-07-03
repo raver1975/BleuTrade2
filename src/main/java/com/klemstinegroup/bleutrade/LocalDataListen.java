@@ -151,7 +151,7 @@ public class LocalDataListen {
                                         System.out.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
                                         try {
                                             PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
-                                            pw.println(dateFormat.format(new Date()) + "\t" + prediction);
+                                            pw.println(dateFormat.format("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date())));
                                             pw.close();
                                         } catch (IOException e) {
                                             e.printStackTrace();
