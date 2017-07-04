@@ -31,20 +31,26 @@ public class LocalDataListen {
             }
             File[] list = new File(".").listFiles();
             for (File f : list) {
+//                if (f.isDirectory() && f.toPath().toString().contains("savedPopulation")) {
+//                    final File[] files = f.listFiles();
+//                    for (File ft : files) ft.delete();
+//                    f.delete();
+//                }
+
                 if (f.isDirectory() && f.toPath().toString().contains("savedPopulation")) {
 
-                    File pop = new File("population");
+                    File pop = new File("populationDAO");
                     if (pop.exists() && pop.isDirectory()) {
                         final File[] files = pop.listFiles();
                         for (File ft : files) ft.delete();
                         pop.delete();
                     }
-                    boolean success = f.renameTo(new File("population"));
+                    boolean success = f.renameTo(new File("populationDAO"));
                     System.out.println("Saved copy succeeded:" + success);
                 }
             }
 
-            if (new File("population").exists()) {
+            if (new File("populationDAO").exists()) {
                 try {
                     Scanner sc = new Scanner(new File(file));
                     ArrayList<String> al = new ArrayList<>();
@@ -53,7 +59,7 @@ public class LocalDataListen {
                     String[] s1 = s.split(",");
                     MainSettings.startTimePoint = new TimePoint(Long.parseLong(s1[0]));
                     MainSettings.endTimePoint = new TimePoint(Long.MAX_VALUE);
-                    MainSettings.populationDAO = "populationDAO";
+//                    MainSettings.populationDAO = "populationDAO";
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }

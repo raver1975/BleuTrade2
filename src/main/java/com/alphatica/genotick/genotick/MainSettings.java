@@ -10,7 +10,7 @@ public class MainSettings {
 
     public static TimePoint startTimePoint = new TimePoint(0);
     public static TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
-    public static String populationDAO = "";
+    public static String populationDAO = "populationDAO";
     public static boolean performTraining = true;
     public static String dataSettings = "data";
     public static int populationDesiredSize = 10_000;
