@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 
 public class MainSettings {
 
+<<<<<<< HEAD
     public TimePoint startTimePoint = new TimePoint(0);
     public TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
     public String populationDAO = "";
