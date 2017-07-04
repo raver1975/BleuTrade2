@@ -19,7 +19,7 @@ public class LocalDataListen {
     static String COIN1 ="ETH";
     static String COIN2 ="BTC";
     static String MARKET=COIN1+"_"+COIN2;
-    int dataSizeLimit = 256;  //Same as datamaximum offset in MainSettings
+    int dataSizeLimit = 1000;  //Same as datamaximum offset in MainSettings
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public LocalDataListen() {
