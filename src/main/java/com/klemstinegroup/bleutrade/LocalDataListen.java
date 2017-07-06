@@ -154,14 +154,6 @@ public class LocalDataListen {
                                         if (prediction.startsWith("OUT")) prediction = "OUT";
                                         if (prediction.startsWith("DOWN")) prediction = "DOWN";
                                         if (prediction.startsWith("UP")) prediction = "UP";
-                                        System.out.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
-                                        try {
-                                            PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
-                                            pw.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
-                                            pw.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
                                         predict(prediction);
                                         break top;
                                     }
@@ -211,9 +203,8 @@ public class LocalDataListen {
             if (b.getCurrency().equals(COIN2)) bitcoin = b.getAvailable();
             if (b.getCurrency().equals(COIN1)) dogecoin = b.getAvailable();
         }
-        System.out.println(COIN1 + ":" + dogecoin + "\t" + COIN2 + ":" + bitcoin);
-        dogecoin /= 10;
-        bitcoin /= 10;
+//        System.out.println(COIN1 + ":" + dogecoin + "\t" + COIN2 + ":" + bitcoin);
+
         HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
         ArrayList<Market> markets = new ArrayList<Market>();
         ArrayList<Market> temp2 = new ArrayList<Market>();
@@ -239,14 +230,21 @@ public class LocalDataListen {
         for (int i = 0; i < tickers.size(); i++) {
             tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
         }
-
-        System.out.println(msaved);
+        double finalResult=bitcoin+dogecoin*tickerHM.get(MARKET).getBid();
+        System.out.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
+        try {
+            PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
+            pw.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (prediction.equals("UP")) {      //BUY
-            double cc = bitcoin / tickerHM.get(MARKET).getAsk();
+            double cc = (bitcoin/10d) / tickerHM.get(MARKET).getAsk();
             Http.buyselllimit(MARKET, tickerHM.get(MARKET).getAsk(), cc, true);
         }
         if (prediction.equals("DOWN")) {    //SELL
-            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getBid(), dogecoin, false);
+            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getBid(), dogecoin/10d, false);
         }
     }
 

@@ -30,7 +30,7 @@ public class MainSettings {
     public static boolean killNonPredictingRobots = true;
     public static double randomRobotsAtEachUpdate = 0.002;
     public static double protectBestRobots = 0.02;
-    public static boolean requireSymmetricalRobots = true;
+    public static boolean requireSymmetricalRobots = false;
     public static double resultThreshold = 1;
     public static int ignoreColumns = 0;
 
