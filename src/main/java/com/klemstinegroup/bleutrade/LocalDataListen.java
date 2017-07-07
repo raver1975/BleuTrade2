@@ -195,7 +195,7 @@ public class LocalDataListen {
     }
 
     private void predict(String prediction) {
-        if (prediction == null || prediction.equals("OUT")) return;
+        if (prediction == null)return;
         ArrayList<Balance> balances = Http.getBalances();
         double dogecoin = -1;
         double bitcoin = -1;
@@ -239,6 +239,7 @@ public class LocalDataListen {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (prediction.equals("OUT")) return;
         if (prediction.equals("UP")) {      //BUY
             double cc = (bitcoin/10d) / tickerHM.get(MARKET).getAsk();
             Http.buyselllimit(MARKET, tickerHM.get(MARKET).getAsk(), cc, true);
