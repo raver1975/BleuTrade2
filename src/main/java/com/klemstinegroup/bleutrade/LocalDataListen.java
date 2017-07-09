@@ -18,7 +18,7 @@ public class LocalDataListen {
     ArrayList<PriceData> priceData = new ArrayList<PriceData>();
     String file = "./data/all.txt";
     //    static final String MARKET = "ETH_BTC";
-    static String COIN1 = "ETH";
+    static String COIN1 = "DOGE";
     static String COIN2 = "BTC";
     static String MARKET = COIN1 + "_" + COIN2;
     int dataSizeLimit = 500;
