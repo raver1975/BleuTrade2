@@ -94,8 +94,8 @@ public class Reversal {
         reversed[0] = table[0];
         // Column 1. Rewrite if first line
         if(lastOriginal == null) {
-            reversed[1] = table[1];
-            reversed[2] = table[2];
+            reversed[1] = 1.0d/(Double)table[2];
+            reversed[2] = 1.0d/(Double)table[1];
         } else {
             // Change by % if not first line
             reversed[1] = getReverseValue(table[1],lastOriginal[1],lastReversed[1]);
