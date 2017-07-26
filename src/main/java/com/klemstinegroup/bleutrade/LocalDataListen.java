@@ -137,9 +137,7 @@ public class LocalDataListen {
                             Collections.reverse(Arrays.asList(split));
                             if (split[0].startsWith("ended")) {
                                 for (String s : split) {
-
-
-                                    if (s.contains("all.txt") && s.contains("prediction") && !s.contains("reverse_all.txt")) {
+                                    if (s.contains("all") && s.contains("prediction") && !s.contains("reverse_all")) {
                                         System.setOut(old);
                                         System.out.println("--------");
 
