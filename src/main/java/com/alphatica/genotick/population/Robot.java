@@ -50,16 +50,6 @@ public class Robot implements Serializable {
         this.inheritedWeight = inheritedWeight;
     }
 
-    public int getRobotNature() {
-        int incorrectPredictions=totalPredictions-correctPredictions;
-        int nature=0;
-        if (correctPredictions>incorrectPredictions)
-            nature=1;
-        else
-            nature=-1;
-        return nature;
-    }
-
     private Robot(int maximumDataOffset, int ignoreColumns) {
         mainFunction = InstructionList.createInstructionList();
         this.maximumDataOffset = maximumDataOffset;

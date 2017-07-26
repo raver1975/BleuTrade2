@@ -3,9 +3,8 @@ package com.alphatica.genotick.data;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 public class DataUtils {
@@ -43,22 +42,18 @@ public class DataUtils {
         List<Number []> list = new ArrayList<>();
         int linesRead = 1;
         try {
-            buildLines(br, list);
+            String line;
+            line = br.readLine();
+            processFirstLine(line,list);
+            linesRead++;
+            while ((line = br.readLine())!=null){
+                linesRead++;
+                Number [] row = processLine(line);
+                list.add(row);
+            }
             return list;
         } catch(IOException | NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-            DataException de = new DataException("Error reading line " + linesRead);
-            de.initCause(ex);
-            throw de;
-        }
-    }
-
-    private static void buildLines(BufferedReader br, List<Number[]> list) throws IOException {
-        String line;
-        line = br.readLine();
-        processFirstLine(line,list);
-        while ((line = br.readLine())!=null){
-            Number [] row = processLine(line);
-            list.add(row);
+            throw new DataException("Error reading line " + linesRead, ex);
         }
     }
 
@@ -92,8 +87,4 @@ public class DataUtils {
 
     }
 
-    public static String getDateTimeString() {
-        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
-        return format.format(Calendar.getInstance().getTime());
-    }
 }

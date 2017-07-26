@@ -3,7 +3,11 @@ package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.timepoint.TimePoint;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,8 +17,8 @@ public class DataSet {
     private final List<double []> values;
     private final DataSetName name;
 
-    public DataSet(List<Number []> lines, String name) {
-        this.name = new DataSetName(name);
+    public DataSet(List<Number []> lines, String fileName) {
+        this.name = new DataSetName(processFileName(fileName));
         timePoints = new TimePoint[lines.size()];
         values = new ArrayList<>();
 
@@ -27,6 +31,11 @@ public class DataSet {
             fillFirstNumberAsTimePoint(lineNumber, line);
             fillValuesArrays(lineNumber, line, firstLineCount);
         }
+    }
+
+    private String processFileName(String fileName) {
+        Path path = Paths.get(fileName);
+        return FilenameUtils.removeExtension(path.getFileName().toString());
     }
 
     public DataSetName getName() {
@@ -135,5 +144,9 @@ public class DataSet {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    List<TimePoint> getTimePoints() {
+        return Arrays.asList(timePoints);
     }
 }

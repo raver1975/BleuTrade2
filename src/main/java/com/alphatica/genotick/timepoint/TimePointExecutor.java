@@ -13,7 +13,8 @@ public interface TimePointExecutor {
 
     TimePointResult execute(List<RobotData> robotDataList,
                             Population population,
-                            boolean updateRobots);
+                            boolean updateRobots,
+                            boolean requireSymmetrical);
 
     void setSettings(DataSetExecutor dataSetExecutor, RobotExecutorFactory robotExecutorFactory);
 }

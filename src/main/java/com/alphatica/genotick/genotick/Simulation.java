@@ -123,6 +123,7 @@ public class Simulation {
         engineSettings.endTimePoint = settings.endTimePoint;
         engineSettings.performTraining = settings.performTraining;
         engineSettings.resultThreshold = settings.resultThreshold;
+        engineSettings.requireSymmetrical = settings.requireSymmetricalRobots;
         return engineSettings;
     }
 
@@ -160,7 +161,6 @@ public class Simulation {
 
     private void showStatsResults(Map<DataSetName, Double> statsResults) {
         for(Map.Entry<DataSetName,Double> entry: statsResults.entrySet()) {
-//todo profit out here
             output.infoMessage("Profit for " + entry.getKey() + ": " + entry.getValue());
         }
     }

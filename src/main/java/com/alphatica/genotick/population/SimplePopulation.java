@@ -79,13 +79,17 @@ public class SimplePopulation implements Population {
             sum += Math.abs(robot.getWeight());
             count++;
         }
-        return sum / count;
+        if(count > 0) {
+            return sum / count;
+        } else {
+            return Double.NaN;
+        }
     }
 
     @Override
     public double getAverageAge()
     {
-        int age = 0;
+        double age = 0;
         for(Robot robot : dao.getRobotList()) {
             age += robot.getTotalPredictions();
         }

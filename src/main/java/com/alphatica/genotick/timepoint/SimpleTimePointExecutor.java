@@ -32,24 +32,26 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
     @Override
     public TimePointResult execute(List<RobotData> robotDataList,
-                                   Population population, boolean updateRobots) {
+                                   Population population, boolean updateRobots, boolean requireSymmetrical) {
         robotInfos.clear();
         TimePointResult timePointResult = new TimePointResult();
         if(robotDataList.isEmpty())
             return timePointResult;
         List<Future<List<RobotResult>>> tasks = submitTasks(robotDataList,population,updateRobots);
-        getResults(timePointResult,tasks);
+        getResults(timePointResult,tasks, requireSymmetrical);
         return timePointResult;
     }
 
-    private void getResults(TimePointResult timePointResult, List<Future<List<RobotResult>>> tasks) {
+    private void getResults(TimePointResult timePointResult, List<Future<List<RobotResult>>> tasks, boolean requireSymmetrical) {
         while(!tasks.isEmpty()) {
             try {
                 int lastIndex = tasks.size() - 1;
                 Future<List<RobotResult>> future = tasks.get(lastIndex);
                 List<RobotResult> results = future.get();
                 tasks.remove(lastIndex);
-                results.forEach(timePointResult::addRobotResult);
+                if(!requireSymmetrical || resultsSymmetrical(results)) {
+                    results.forEach(timePointResult::addRobotResult);
+                }
             } catch (InterruptedException ignore) {
                 /* Do nothing, try again */
             } catch (ExecutionException e) {
@@ -58,6 +60,12 @@ class SimpleTimePointExecutor implements TimePointExecutor {
                 System.exit(1);
             }
         }
+    }
+
+    private boolean resultsSymmetrical(List<RobotResult> results) {
+        long votesUp = results.stream().filter(result -> result.getPrediction() == Prediction.UP).count();
+        long votesDown = results.stream().filter(result -> result.getPrediction() == Prediction.DOWN).count();
+        return votesUp == votesDown;
     }
 
 

@@ -30,7 +30,7 @@ public class Main {
         checkShowPopulation(parameters);
         checkShowRobot(parameters);
         getUserIO(parameters);
-        setupExceptionHandler();
+//        setupExceptionHandler();
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
@@ -132,9 +132,9 @@ public class Main {
         return sb.toString();
     }
 
-    private static void setupExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler(output.createExceptionHandler());
-    }
+//    private static void setupExceptionHandler() {
+//        Thread.setDefaultUncaughtExceptionHandler(output.createExceptionHandler());
+//    }
 
     private static void checkVersionRequest(Parameters parameters) {
         if (parameters.getValue("showVersion") != null) {

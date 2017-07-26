@@ -28,7 +28,6 @@ public class YahooFixer {
     private void fixFile(String name) {
         output.infoMessage("Fixing file: " + name);
         List<Number[]> originalList = buildOriginalList(name);
-        Collections.reverse(originalList);
         List<List<Number>> newList = fixList(originalList);
         saveListToFile(newList,name);
     }
@@ -37,9 +36,7 @@ public class YahooFixer {
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(name)))) {
             writeList(newList,bw);
         } catch (IOException e) {
-            DataException dataException = new DataException("Unable to write file " + name);
-            dataException.initCause(e);
-            throw dataException;
+            throw new DataException("Unable to write file " + name, e);
         }
     }
 
@@ -76,9 +73,7 @@ public class YahooFixer {
             ignoreFirstLine(br);
             return DataUtils.createLineList(br);
         } catch (IOException e) {
-            DataException dataException = new DataException("Unable to read file " + name);
-            dataException.initCause(e);
-            throw dataException;
+            throw new DataException("Unable to read file " + name, e);
         }
     }
 
@@ -95,7 +90,7 @@ public class YahooFixer {
         List<Number> newLine = new ArrayList<>(line.length);
         double originalClose = line[4].doubleValue();
         double adjustedClose = line[6].doubleValue();
-        // Nothing with to do be done with Date
+        // Nothing to be done with Date
         newLine.add(line[0]);
         double open = calculateNew(line[1],originalClose,adjustedClose);
         newLine.add(open);
