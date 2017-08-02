@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,6 +23,7 @@ public class LocalDataListen {
     static String COIN2 = "BTC";
     static String MARKET = COIN1 + "_" + COIN2;
     int dataSizeLimit = 500;
+    static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public LocalDataListen() {
@@ -229,10 +231,11 @@ public class LocalDataListen {
             tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
         }
         double finalResult=bitcoin+dogecoin*tickerHM.get(MARKET).getBid();
-        System.out.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
+        String ss=dateFormat.format(new Date())+"\t"+"FINAL: "+dfcoins.format(finalResult)+"\tPREDICTION: " + prediction + "\t" + "MARKET PRICE: "+tickerHM.get(MARKET).getBid();
+        System.out.println(ss);
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
-            pw.println("FINAL: "+finalResult+"\tPREDICTION: " + prediction + "\t" + dateFormat.format(new Date()));
+            pw.println(ss);
             pw.close();
         } catch (IOException e) {
             e.printStackTrace();
