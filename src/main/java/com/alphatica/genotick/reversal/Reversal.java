@@ -57,8 +57,8 @@ public class Reversal {
     private static String getReverseFileName(DataSetName name) {
         Path full = Paths.get(name.getName());
         Path parent = full.getParent();
-        String newName = "reverse_" + full.getFileName().toString();
-        return Paths.get(parent.toString(), newName).toString();
+        String newName = "reverse_" + full.getFileName().toString()+".txt";
+        return Paths.get("data/", newName).toString();
     }
 
     private static List<Number[]> reverseList(List<Number[]> original) {
@@ -95,9 +95,11 @@ public class Reversal {
         // Column 1. Rewrite if first line
         if(lastOriginal == null) {
             reversed[1] = table[1];
+            reversed[2] = table[2];
         } else {
             // Change by % if not first line
             reversed[1] = getReverseValue(table[1],lastOriginal[1],lastReversed[1]);
+            reversed[2] = getReverseValue(table[2],lastOriginal[2],lastReversed[2]);
         }
 //        // Check if 4 columns here, because we need time, open, high, low to do swapping later.
 //        if(table.length < 4)
@@ -113,7 +115,7 @@ public class Reversal {
 //        // Column 4. Change by % comparing to open.
 //        reversed[4] = getReverseValue(table[4],table[1],reversed[1]);
 //        // Rewrite rest
-        System.arraycopy(table, 2, reversed, 2, table.length - 2);
+        System.arraycopy(table, 3, reversed, 3, table.length - 3);
         return reversed;
     }
 

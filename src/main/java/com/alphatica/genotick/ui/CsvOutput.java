@@ -4,11 +4,15 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
+
+import static java.lang.String.format;
 
 public class CsvOutput implements UserOutput {
     private final ConsoleOutput console;
@@ -42,13 +46,18 @@ public class CsvOutput implements UserOutput {
 
     @Override
     public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
-        String line = String.format("%s,%s,%s",timePoint.toString(),name.toString(),prediction.toString());
+        String line = format("%s,%s,%s",timePoint.toString(),name.toString(),prediction.toString());
         predictionWriter.writeLine(line);
     }
 
     @Override
-    public Thread.UncaughtExceptionHandler createExceptionHandler() {
-        return console.createExceptionHandler();
+    public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
+        File file = new File(format("%s_%s_cumulative.csv", name.getName(),  pidString));
+        try {
+            FileUtils.writeLines(file, Collections.singletonList(format("%d,%s", timePoint.getValue(), profit)));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to write to file " + file.getAbsolutePath(), e);
+        }
     }
 
     @Override
@@ -57,12 +66,12 @@ public class CsvOutput implements UserOutput {
     }
 
 	@Override
-	public void setDebug(Boolean debug) {
-		this.debug = debug;		
+	public void setDebugEnabled(Boolean debugEnabled) {
+		this.debug = debugEnabled;
 	}
 
 	@Override
-	public Boolean getDebug() {		
+	public Boolean getDebugEnabled() {
 		return this.debug;
 	}
 

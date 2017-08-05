@@ -17,6 +17,10 @@ public enum Prediction {
         return Prediction.OUT;
     }
 
+    public double toProfit(double actualChange) {
+        return actualChange * value;
+    }
+
     public boolean isCorrect(double actualFutureChange) {
         return actualFutureChange * value > 0;
     }

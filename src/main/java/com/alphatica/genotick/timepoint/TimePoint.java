@@ -21,13 +21,7 @@ public class TimePoint implements Comparable<TimePoint>, Serializable {
 
     @Override
     public int compareTo(@SuppressWarnings("NullableProblems") TimePoint timePoint) {
-        if(this.value > timePoint.value) {
-            return 1;
-        } else if(this.value < timePoint.value) {
-            return -1;
-        } else {
-            return 0;
-        }
+        return Long.compare(this.value, timePoint.value);
     }
 
     public long getValue() {
@@ -36,5 +30,20 @@ public class TimePoint implements Comparable<TimePoint>, Serializable {
 
     public TimePoint next() {
         return new TimePoint(value + 1);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TimePoint timePoint = (TimePoint) o;
+
+        return value == timePoint.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (value ^ (value >>> 32));
     }
 }

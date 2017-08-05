@@ -138,14 +138,7 @@ public class DataCollector {
                     if ((g1.equals(LocalDataListen.COIN1)) && (g2.equals(LocalDataListen.COIN2))) {
                         btcdge = time + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
                     }
-                    allout = allout + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
-//                    FileWriter fw=new FileWriter(new File("./data/"+g1+"_"+g2+".txt"),true);
-//                    fw.write(writeOut);
-//                    fw.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                saved.add(new TickerData(g1, g2, bid, ask, last, time));
+//                    allout = allout + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
                 }
 //
                 FileWriter fwall = null;

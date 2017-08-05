@@ -6,9 +6,9 @@ import com.alphatica.genotick.timepoint.TimePoint;
 
 public interface UserOutput {
 	
-	void setDebug(Boolean debug);
+	void setDebugEnabled(Boolean debugEnabled);
 	
-	Boolean getDebug();	
+	Boolean getDebugEnabled();
 	
     void errorMessage(String message);
 
@@ -20,7 +20,7 @@ public interface UserOutput {
 
     void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction);
 
-    Thread.UncaughtExceptionHandler createExceptionHandler();
+    void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit);
 
     void infoMessage(String s);
 }

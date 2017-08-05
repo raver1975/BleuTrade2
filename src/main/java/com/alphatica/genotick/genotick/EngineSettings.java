@@ -7,4 +7,5 @@ class EngineSettings {
     public TimePoint endTimePoint;
     public boolean performTraining;
     public double resultThreshold;
+    public boolean requireSymmetrical;
 }

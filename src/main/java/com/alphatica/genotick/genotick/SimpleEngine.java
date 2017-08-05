@@ -38,7 +38,7 @@ public class SimpleEngine implements Engine {
 
     @Override
     public List<TimePointStats> start() {
-        Thread.currentThread().setName("MainModified engine execution thread");
+        Thread.currentThread().setName("Main engine execution thread");
         double result = 1;
         initPopulation();
         TimePoint timePoint = new TimePoint(engineSettings.startTimePoint);
@@ -51,7 +51,10 @@ public class SimpleEngine implements Engine {
                 profitRecorder.recordProfit(stat);
                 output.reportProfitForTimePoint(timePoint, (result - 1) * 100, stat.getPercentEarned());
             }
-            timePoint = timePoint.next();
+            timePoint = data.getNextTimePint(timePoint);
+            if(timePoint == null) {
+                break;
+            }
         }
         if (engineSettings.performTraining) {
             savePopulation(output);
@@ -106,7 +109,7 @@ public class SimpleEngine implements Engine {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if (robotDataList.isEmpty())
             return null;
-        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining);
+        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
@@ -127,8 +130,10 @@ public class SimpleEngine implements Engine {
     private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, TimePointStats timePointStats) {
         Double actualChange = data.getActualChange(dataSetResult.getName(), timePoint);
         if (!actualChange.isNaN()) {
+            double totalProfit = data.recordProfit(dataSetResult.getName(), prediction.toProfit(actualChange));
+            output.showCumulativeProfit(timePoint, dataSetResult.getName(), totalProfit);
             printPercentEarned(timePoint, dataSetResult.getName(), actualChange, prediction);
-            if (!actualChange.isInfinite() && !actualChange.isNaN() && prediction != null) {
+            if (!actualChange.isInfinite() && !actualChange.isNaN()) {
                 timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
         }

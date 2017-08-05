@@ -6,7 +6,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
+
+import static java.lang.String.format;
 
 public class PopulationDAOFileSystem implements PopulationDAO {
     private static final String FILE_EXTENSION = ".prg";
@@ -52,6 +55,9 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
                 @Override
                 public Robot next() {
+                    if(!hasNext()) {
+                        throw new NoSuchElementException(format("Unable to get element %d", index+1));
+                    }
                     return getRobotByName(names.get(index++));
                 }
 
@@ -99,12 +105,12 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     private void checkPath(String dao) {
         File file = new File(dao);
-        if(!file.exists())
-            throw new DAOException(String.format("Path '%s' does not exist.",dao));
+        if(!file.exists()){file.mkdir();}
+//            throw new DAOException(format("Path '%s' does not exist.",dao));
         if(!file.isDirectory())
-            throw new DAOException(String.format("Path '%s' is not a directory.",dao));
+            throw new DAOException(format("Path '%s' is not a directory.",dao));
         if(!file.canRead())
-            throw new DAOException(String.format("Path '%s' is not readable.",dao));
+            throw new DAOException(format("Path '%s' is not readable.",dao));
     }
 
     private List<RobotName> getAllRobotsNames() {
@@ -122,19 +128,14 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     private String [] listFiles(String dir) {
         File path = new File(dir);
-        return path.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(FILE_EXTENSION);
-            }
-        });
+        return path.list((dir1, name) -> name.endsWith(FILE_EXTENSION));
     }
 
     private RobotName getAvailableName() {
         File file;
         long l;
         do {
-            l = Math.abs(random.nextLong());
+            l = Math.abs(random.nextLong()-1);
             file = new File(robotsPath + String.valueOf(l) + FILE_EXTENSION);
         } while (file.exists());
         return new RobotName(l);
