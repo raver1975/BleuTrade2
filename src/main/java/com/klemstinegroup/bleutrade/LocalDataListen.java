@@ -24,8 +24,20 @@ public class LocalDataListen {
     int dataSizeLimit = 500;
     static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    public static ArrayList<HistoricalData> last500 =new ArrayList<HistoricalData>();
-    public static double lastPrice=0d;
+    public static int histdatasize = 50;
+    public static ArrayList<HistoricalData> last500 = new ArrayList<HistoricalData>();
+    public static boolean firstRun = true;
+
+    static {
+        for (int i = 0; i < histdatasize; i++) {
+            HistoricalData hd = new HistoricalData("OUT", 0, 0);
+            hd.correct = Math.random() < 0.5d;
+            hd.timestamp = System.currentTimeMillis() - (histdatasize - i) * DataCollector.timeout * 1000;
+            last500.add(hd);
+        }
+    }
+
+    public static double lastPrice = 0d;
 
     public LocalDataListen() {
         try {
@@ -144,10 +156,10 @@ public class LocalDataListen {
                                         System.setOut(old);
                                         System.out.println("--------");
 
-                                        double finalResult=-1;
+                                        double finalResult = -1;
                                         try {
                                             String[] pp = split[1].split(": ");
-                                            finalResult=Double.parseDouble(pp[1]);
+                                            finalResult = Double.parseDouble(pp[1]);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -196,7 +208,7 @@ public class LocalDataListen {
     }
 
     private void predict(String prediction) {
-        if (prediction == null)return;
+        if (prediction == null) return;
         ArrayList<Balance> balances = Http.getBalances();
         double dogecoin = -1;
         double bitcoin = -1;
@@ -231,8 +243,8 @@ public class LocalDataListen {
         for (int i = 0; i < tickers.size(); i++) {
             tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
         }
-        double finalResult=bitcoin+dogecoin*tickerHM.get(MARKET).getBid();
-        String ss=dateFormat.format(new Date())+"\t"+"FINAL: "+dfcoins.format(finalResult)+"\tPREDICTION: " + prediction + "\t" + "MARKET PRICE: "+tickerHM.get(MARKET).getBid();
+        double finalResult = bitcoin + dogecoin * tickerHM.get(MARKET).getBid();
+        String ss = dateFormat.format(new Date()) + "\t" + "FINAL: " + dfcoins.format(finalResult) + "\tPREDICTION: " + prediction + "\t" + "MARKET PRICE: " + tickerHM.get(MARKET).getBid();
         System.out.println(ss);
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
@@ -241,17 +253,21 @@ public class LocalDataListen {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        HistoricalData hs=new HistoricalData(prediction,tickerHM.get(MARKET).getBid(),lastPrice);
+        HistoricalData hs = new HistoricalData(prediction, tickerHM.get(MARKET).getBid(), lastPrice);
+        if (firstRun) {
+            last500.clear();
+            firstRun = false;
+        }
         last500.add(hs);
-        lastPrice=tickerHM.get(MARKET).getBid();
-        while (last500.size()>500) last500.remove(0);
+        lastPrice = tickerHM.get(MARKET).getBid();
+        while (last500.size() > histdatasize) last500.remove(0);
         if (prediction.equals("OUT")) return;
         if (prediction.equals("UP")) {      //BUY
-            double cc = (bitcoin/10d) / tickerHM.get(MARKET).getAsk();
+            double cc = (bitcoin / 10d) / tickerHM.get(MARKET).getAsk();
             Http.buyselllimit(MARKET, tickerHM.get(MARKET).getAsk(), cc, true);
         }
         if (prediction.equals("DOWN")) {    //SELL
-            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getBid(), dogecoin/10d, false);
+            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getBid(), dogecoin / 10d, false);
         }
     }
 

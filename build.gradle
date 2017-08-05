@@ -1,10 +1,8 @@
 group 'com.klemstinegroup'
 version '1.0-SNAPSHOT'
 
-apply plugin: 'java'
-apply plugin: 'application'
 
-sourceCompatibility = 1.8
+
 
 repositories {
     mavenCentral()
@@ -18,8 +16,15 @@ buildscript {
     dependencies {
         classpath 'com.github.rholder:gradle-one-jar:1.0.4'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.5.RELEASE")
     }
 }
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+sourceCompatibility = 1.8
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -46,27 +51,32 @@ dependencies {
 
 //    compile group: 'jfree', name: 'jfreechart', version: '1.0.13'
 //    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+    springBoot {
+        mainClass = "com.klemstinegroup.bleutrade.SampleController"
+    }
+
+    jar {
+
+        archiveName = "DataCollector.jar"
+
+        from {
+
+            configurations.runtime.collect {
+                it.isDirectory() ? it : zipTree(it)
+            }
+
+            configurations.compile.collect {
+                it.isDirectory() ? it : zipTree(it)
+            }
+        }
+
+        manifest {
+            attributes 'Main-Class': 'com.klemstinegroup.bleutrade.SampleController'
+        }
+
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    }
 }
 
 
-jar {
-
-    archiveName = "DataCollector.jar"
-
-    from {
-
-        configurations.runtime.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-
-        configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-
-    manifest {
-        attributes 'Main-Class': 'com.klemstinegroup.bleutrade.DataCollector'
-    }
-
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
-}

@@ -27,10 +27,10 @@ public class DataCollector {
     public static String coin1;
     public static String coin2;
     public static int bots;
+    public static long timeout;
 
     static DecimalFormat dfdollars = new DecimalFormat("+0000.00;-0000.00");
     static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
-    private long timeout;
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
