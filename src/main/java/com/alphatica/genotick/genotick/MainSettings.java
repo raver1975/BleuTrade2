@@ -3,6 +3,7 @@ package com.alphatica.genotick.genotick;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.ui.UserOutput;
+import com.klemstinegroup.bleutrade.DataCollector;
 
 import java.lang.reflect.Field;
 
@@ -13,7 +14,7 @@ public class MainSettings {
     public static String populationDAO = "populationDAO";
     public static boolean performTraining = true;
     public static String dataSettings = "data";
-    public static int populationDesiredSize = 25000;
+    public static int populationDesiredSize = DataCollector.bots;
     public static int processorInstructionLimit = 256;
     public static double maximumDeathByAge = 0.01;
     public static double maximumDeathByWeight = 0.1;

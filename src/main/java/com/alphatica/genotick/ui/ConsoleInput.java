@@ -1,7 +1,7 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Main;
+import com.alphatica.genotick.genotick.MainModified;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 

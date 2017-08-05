@@ -19,8 +19,15 @@ public class DataCollector {
     ArrayList<Market> markets = new ArrayList<Market>();
     private ArrayList<Ticker> tickers = new ArrayList<Ticker>();
     private HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
-    static String apikey;
-    static String apisecret;
+
+    public static String apikey;
+    public static String apisecret;
+    public static boolean debug;
+    public static String market;
+    public static String coin1;
+    public static String coin2;
+    public static int bots;
+
     static DecimalFormat dfdollars = new DecimalFormat("+0000.00;-0000.00");
     static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
     private long timeout;
@@ -199,9 +206,20 @@ public class DataCollector {
             apikey = prop.getProperty("apikey");
             apisecret = prop.getProperty("apisecret");
             timeout =Long.parseLong(prop.getProperty("dataCollectTimeoutSeconds"));
+            debug = Boolean.parseBoolean(prop.getProperty("debug"));
+            bots=Integer.parseInt(prop.getProperty("bots"));
+            market=prop.getProperty("market");
+            coin1=prop.getProperty("coin1");
+            coin2=prop.getProperty("coin2");
 
             System.out.println("apikey=" + apikey);
             System.out.println("apisecret=" + apisecret);
+            System.out.println("timeout=" + timeout);
+            System.out.println("debug=" + debug);
+            System.out.println("bots=" + bots);
+            System.out.println("market=" + market);
+            System.out.println("coin1=" + coin1);
+            System.out.println("coin2=" + coin2);
 
 
         } catch (IOException e) {
