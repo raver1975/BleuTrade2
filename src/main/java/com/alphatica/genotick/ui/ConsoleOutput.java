@@ -15,7 +15,7 @@ import static java.lang.String.format;
 
 class ConsoleOutput implements UserOutput {
 
-    private File logFile = new File(format("genotick-log-%s.txt", Tools.getPidString()));
+    //private File logFile = new File(format("genotick-log-%s.txt", Tools.getPidString()));
     private Boolean debugEnabled = true;
 
     @Override
@@ -53,14 +53,14 @@ class ConsoleOutput implements UserOutput {
 
     private void log(String string) {
         System.out.println(string);
-        try {
-            FileUtils.writeStringToFile(logFile, string + System.lineSeparator(), Charset.defaultCharset().toString());
-        } catch (IOException e) {
-
-            System.err.println("Unable to write to file " + logFile.getPath() + ": " + e.getMessage());
-
-            throw new ExecutionException(format("Unable to write to file %s", logFile.getAbsoluteFile()), e);
-        }
+//        try {
+//            FileUtils.writeStringToFile(logFile, string + System.lineSeparator(), Charset.defaultCharset().toString());
+//        } catch (IOException e) {
+//
+//            System.err.println("Unable to write to file " + logFile.getPath() + ": " + e.getMessage());
+//
+//            throw new ExecutionException(format("Unable to write to file %s", logFile.getAbsoluteFile()), e);
+//        }
     }
 
 	@Override
