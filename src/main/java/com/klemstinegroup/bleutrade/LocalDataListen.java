@@ -1,6 +1,6 @@
 package com.klemstinegroup.bleutrade;
 
-import com.alphatica.genotick.genotick.Main;
+import com.alphatica.genotick.genotick.MainModified;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.klemstinegroup.bleutrade.json.Balance;
@@ -173,7 +173,7 @@ public class LocalDataListen {
             }).start();
 
             try {
-                Main.main(new String[]{});
+                MainModified.main(new String[]{});
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
