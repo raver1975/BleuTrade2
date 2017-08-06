@@ -12,6 +12,7 @@ import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.account.AccountInfo;
 import org.knowm.xchange.dto.marketdata.Ticker;
+import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.MarketOrder;
 import org.knowm.xchange.service.account.AccountService;
 import org.knowm.xchange.service.marketdata.MarketDataService;
@@ -311,20 +312,26 @@ public class LocalDataListen {
             double cc = (bitcoin / 10d) / ticker.getAsk().doubleValue();
             //buy
 //            Http.buyselllimit(MARKET, ticker.getAsk().doubleValue(), cc, true);
-            MarketOrder mo=new MarketOrder(Order.OrderType.BID,new BigDecimal(cc),currencyPair);
+//            LimitOrder mo=new LimitOrder(Order.OrderType.BID,new BigDecimal(cc),currencyPair);
+            System.out.println("buying "+cc+" at "+dfcoins.format(ticker.getAsk().doubleValue()));
+            LimitOrder mo=new LimitOrder((Order.OrderType.BID), new BigDecimal(cc), currencyPair, null, null,new BigDecimal(ticker.getAsk().doubleValue()) );
             try {
-                exchange.getTradeService().placeMarketOrder(mo);
-            } catch (IOException e) {
+                String result =exchange.getTradeService().placeLimitOrder(mo);
+                System.out.println(result);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         if (prediction.equals("DOWN")) {    //SELL
             // sell
             double cc=dogecoin / 10d;
-            MarketOrder mo=new MarketOrder(Order.OrderType.ASK,new BigDecimal(cc),currencyPair);
+//            MarketOrder mo=new MarketOrder(Order.OrderType.ASK,new BigDecimal(cc),currencyPair);
+            System.out.println("selling "+cc+" at "+dfcoins.format(ticker.getAsk().doubleValue()));
+            LimitOrder mo=new LimitOrder((Order.OrderType.BID), new BigDecimal(cc), currencyPair, null, null,new BigDecimal(ticker.getBid().doubleValue()) );
+
             try {
-                exchange.getTradeService().placeMarketOrder(mo);
-            } catch (IOException e) {
+                exchange.getTradeService().placeLimitOrder(mo);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 // Http.buyselllimit(MARKET, ticker.getBid().doubleValue(), dogecoin / 10d, false);
