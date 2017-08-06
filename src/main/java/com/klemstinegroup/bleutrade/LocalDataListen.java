@@ -241,12 +241,17 @@ public class LocalDataListen {
         if (prediction == null) return;
         // get balance
         //get currency
-        Exchange bleutrade = ExchangeFactory.INSTANCE.createExchange(BleutradeExchange.class.getName());
-        ExchangeSpecification exchangeSpecification = bleutrade.getDefaultExchangeSpecification();
+        Exchange exchange = null;
+        try {
+            exchange = ExchangeFactory.INSTANCE.createExchange(Class.forName("org.knowm.xchange.bleutrade."+DataCollector.market+"Exchange").getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        ExchangeSpecification exchangeSpecification = exchange.getDefaultExchangeSpecification();
         exchangeSpecification.setApiKey(DataCollector.apikey);
         exchangeSpecification.setSecretKey(DataCollector.apisecret);
-        bleutrade.applySpecification(exchangeSpecification);
-        MarketDataService marketDataService = bleutrade.getMarketDataService();
+        exchange.applySpecification(exchangeSpecification);
+        MarketDataService marketDataService = exchange.getMarketDataService();
 
         CurrencyPair currencyPair=new CurrencyPair(COIN1, COIN2);
 
@@ -257,7 +262,7 @@ public class LocalDataListen {
             e.printStackTrace();
         }
 
-        AccountService accountService = bleutrade.getAccountService();
+        AccountService accountService = exchange.getAccountService();
         AccountInfo accountInfo = null;
         try {
             accountInfo = accountService.getAccountInfo();
@@ -308,7 +313,7 @@ public class LocalDataListen {
 //            Http.buyselllimit(MARKET, ticker.getAsk().doubleValue(), cc, true);
             MarketOrder mo=new MarketOrder(Order.OrderType.BID,new BigDecimal(cc),currencyPair);
             try {
-                bleutrade.getTradeService().placeMarketOrder(mo);
+                exchange.getTradeService().placeMarketOrder(mo);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -318,7 +323,7 @@ public class LocalDataListen {
             double cc=dogecoin / 10d;
             MarketOrder mo=new MarketOrder(Order.OrderType.ASK,new BigDecimal(cc),currencyPair);
             try {
-                bleutrade.getTradeService().placeMarketOrder(mo);
+                exchange.getTradeService().placeMarketOrder(mo);
             } catch (IOException e) {
                 e.printStackTrace();
             }

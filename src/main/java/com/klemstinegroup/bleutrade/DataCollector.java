@@ -52,12 +52,14 @@ public class DataCollector {
         while (true) {
             try {
                 //get currency
-                Exchange bleutrade = ExchangeFactory.INSTANCE.createExchange(BleutradeExchange.class.getName());
-                ExchangeSpecification exchangeSpecification = bleutrade.getDefaultExchangeSpecification();
+
+                System.out.println(BleutradeExchange.class.getName());
+                Exchange exchange = ExchangeFactory.INSTANCE.createExchange(Class.forName("org.knowm.xchange.bleutrade."+market+"Exchange").getName());
+                ExchangeSpecification exchangeSpecification = exchange.getDefaultExchangeSpecification();
                 exchangeSpecification.setApiKey(DataCollector.apikey);
                 exchangeSpecification.setSecretKey(DataCollector.apisecret);
-                bleutrade.applySpecification(exchangeSpecification);
-                MarketDataService marketDataService = bleutrade.getMarketDataService();
+                exchange.applySpecification(exchangeSpecification);
+                MarketDataService marketDataService = exchange.getMarketDataService();
 
                 Ticker ticker = null;
                 try {
