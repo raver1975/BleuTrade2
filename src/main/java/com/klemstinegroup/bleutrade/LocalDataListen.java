@@ -262,6 +262,7 @@ public class LocalDataListen {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (ticker==null)return;
 
         AccountService accountService = exchange.getAccountService();
         AccountInfo accountInfo = null;
