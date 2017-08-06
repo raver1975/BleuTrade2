@@ -16,12 +16,10 @@ buildscript {
     dependencies {
         classpath 'com.github.rholder:gradle-one-jar:1.0.4'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.5.RELEASE")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.5.RELEASE"
     }
 }
-
 apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
 sourceCompatibility = 1.8
@@ -34,9 +32,10 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
     compile("org.springframework.boot:spring-boot-starter-web:1.5.6.RELEASE")
     // https://mvnrepository.com/artifact/org.knowm.xchange/xchange-core
-    compile group: 'org.knowm.xchange', name: 'xchange-core', version: '4.2.1'
-    compile 'org.knowm.xchange:xchange-bleutrade:4.2.1'
+//    compile group: 'org.knowm.xchange', name: 'xchange-core', version: '4.2.1'
 
+    compile 'org.knowm.xchange:xchange-core:4.2.1'
+    compile 'org.knowm.xchange:xchange-bleutrade:4.2.1'
 
 //    compile group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version: '1.13.1'
 //    compile group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.8.0'
