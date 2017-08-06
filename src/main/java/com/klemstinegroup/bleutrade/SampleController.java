@@ -81,8 +81,8 @@ public class SampleController {
                 "     data-ad-format=\"auto\"></ins>\n" +
                 "<script>\n" +
                 "(adsbygoogle = window.adsbygoogle || []).push({});\n" +
-                "</script>";
-        content += "</body></html>";
+                "</script></div>";
+
 
         content += "<div style=\"max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script></div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
@@ -95,7 +95,8 @@ public class SampleController {
 //        content += "<div>" + correct + "/" + total + " correct</div>";
         int percent=(int)((correct*100)/total);
         content+="<div style=\"color:red;z-index: 1; position: absolute; top: 225px; left: 100px; height:250px; width:500px;\"><h2>"+percent+"% Correct!</br>Next prediction: "+prediction+"</h2></div>";
-        content+="<div></br><\br></br><\br>Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div>";
+        content+="<div></br></br></br></br>Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div>";
+        content += "</body></html>";
         return content;
     }
 
