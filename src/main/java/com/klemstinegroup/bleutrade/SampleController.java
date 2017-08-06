@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.text.DateFormat;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @EnableAutoConfiguration
@@ -47,7 +48,15 @@ public class SampleController {
         if (data.length() > 0) data = data.substring(0, data.length() - 1);
         if (pointBackgroundColor.length() > 0)
             pointBackgroundColor = pointBackgroundColor.substring(0, pointBackgroundColor.length() - 1);
-
+        long millis=(lastTime + DataCollector.timeout * 1000)-System.currentTimeMillis();
+        if (millis<1000)millis=1000;
+        int refresh= (int) (millis/1000);
+        if (refresh>60)refresh+=60;
+        String timeLeft=String.format("%d min, %d sec",
+                TimeUnit.MILLISECONDS.toMinutes(millis),
+                TimeUnit.MILLISECONDS.toSeconds(millis) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+        );
         String chart = "new Chart(document.getElementById(\"myChart\"), {\n" +
                 "  type: 'line',\n" +
                 "  data: {\n" +
@@ -71,7 +80,7 @@ public class SampleController {
                 "    }\n" +
                 "  }\n" +
                 "});";
-        String content = "<html><head><script type=\"text/javascript\" src=\"https://github.com/chartjs/Chart.js/releases/download/v2.6.0/Chart.bundle.min.js\"></script></head><body>";
+        String content = "<html><head><meta http-equiv=\"refresh\" content=\""+refresh+"\"><script type=\"text/javascript\" src=\"https://github.com/chartjs/Chart.js/releases/download/v2.6.0/Chart.bundle.min.js\"></script></head><body> <div style=\"width:100%; margin:0 auto;text-align:center;\">";
         content+="<div width=\"100%\" height=\"200px\"><script async src=\"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>\n" +
                 "<!-- Predictor -->\n" +
                 "<ins class=\"adsbygoogle\"\n" +
@@ -83,8 +92,7 @@ public class SampleController {
                 "(adsbygoogle = window.adsbygoogle || []).push({});\n" +
                 "</script></div>";
 
-
-        content += "<div style=\"max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script></div>";
+        content += "<div style=\" margin:0 auto;max-height:90%;width:90%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script></div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
 //                DateFormat.SHORT, DateFormat.MEDIUM).format(lastTime) + "</div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
@@ -94,9 +102,13 @@ public class SampleController {
 //        content += "<div>" + prediction + "</div>";
 //        content += "<div>" + correct + "/" + total + " correct</div>";
         int percent=(int)((correct*100)/total);
-        content+="<div style=\"color:red;z-index: 1; position: absolute; top: 225px; left: 100px; height:250px; width:500px;\"><h2>"+percent+"% Correct!</br>Next prediction: "+prediction+"</h2></div>";
-        content+="<div></br></br></br></br>Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div>";
-        content += "</body></html>";
+        content+="<div style=\"z-index: 1; position: absolute; top: 150px; left: 25px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Next prediction: <span style=\"color:red;\">"+prediction+"</span></br>in "+timeLeft+"</h3></div>";
+
+        content+="</br></br></br></br>";
+        content+="<div><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
+        content+="<div><a href=\"mailto:paulklemstine@gmail.com\">&copy;2017 Paul Klemstine</a></div>";
+        content+="<div>Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div>";
+        content += "</div></body></html>";
         return content;
     }
 
