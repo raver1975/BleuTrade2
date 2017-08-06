@@ -24,20 +24,37 @@ public class LocalDataListen {
     int dataSizeLimit = 500;
     static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    public static int histdatasize = 50;
+    public static int histdatasize = 101;
     public static ArrayList<HistoricalData> last500 = new ArrayList<HistoricalData>();
-    public static boolean firstRun = true;
 
     static {
-        for (int i = 0; i < histdatasize; i++) {
-            HistoricalData hd = new HistoricalData("OUT", 0, 0);
-            hd.correct = Math.random() < 0.5d;
-            hd.timestamp = System.currentTimeMillis() - (histdatasize - i) * DataCollector.timeout * 1000;
-            last500.add(hd);
+        File file=new File("history.ser");
+        if (file.exists()){
+            try {
+                last500=(ArrayList<HistoricalData>) Serializer.load(file);
+            } catch (Exception e) {
+                File file1=new File("history1.ser");
+                if (file1.exists()){
+                    try {
+                        last500=(ArrayList<HistoricalData>) Serializer.load(file1);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
         }
+//        else {
+//            for (int i = 0; i < histdatasize; i++) {
+//                HistoricalData hd = new HistoricalData("OUT", 0);
+//                //hd.correct = Math.random() < 0.5d;
+//                hd.timestamp = System.currentTimeMillis() - (histdatasize - i) * DataCollector.timeout * 1000;
+//                hd.setNextPrice(0d);
+//                last500.add(hd);
+//            }
+//        }
     }
 
-    public static double lastPrice = 0d;
+    //public static double lastPrice = 0d;
 
     public LocalDataListen() {
         try {
@@ -244,7 +261,7 @@ public class LocalDataListen {
             tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
         }
         double finalResult = bitcoin + dogecoin * tickerHM.get(MARKET).getBid();
-        String ss = dateFormat.format(new Date()) + "\t" + "FINAL: " + dfcoins.format(finalResult) + "\tPREDICTION: " + prediction + "\t" + "MARKET PRICE: " + tickerHM.get(MARKET).getBid();
+        String ss = dateFormat.format(new Date()) + "\t" + "FINAL: " + dfcoins.format(finalResult) + "\tPRE: " + prediction + "\t" + "PRICE: " + dfcoins.format(tickerHM.get(MARKET).getBid());
         System.out.println(ss);
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
@@ -253,13 +270,23 @@ public class LocalDataListen {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        HistoricalData hs = new HistoricalData(prediction, tickerHM.get(MARKET).getBid(), lastPrice);
-        if (firstRun) {
-            last500.clear();
-            firstRun = false;
+        HistoricalData hs = new HistoricalData(prediction, tickerHM.get(MARKET).getBid());
+        if (last500.size()>0){
+            HistoricalData hd1=last500.get(last500.size()-1);
+            hd1.setNextPrice(tickerHM.get(MARKET).getBid());
         }
         last500.add(hs);
-        lastPrice = tickerHM.get(MARKET).getBid();
+        File file=new File("history.ser");
+        try {
+            Serializer.save(last500,file);
+        } catch (Exception e) {
+        }
+        file=new File("history1.ser");
+        try {
+            Serializer.save(last500,file);
+        } catch (Exception e) {
+        }
+//        lastPrice = tickerHM.get(MARKET).getBid();
         while (last500.size() > histdatasize) last500.remove(0);
         if (prediction.equals("OUT")) return;
         if (prediction.equals("UP")) {      //BUY

@@ -1,35 +1,31 @@
 package com.klemstinegroup.bleutrade;
 
-public class HistoricalData {
-    public  String prediction;
-    public  double price;
-    public double lastPrice;
-    public long timestamp;
-    public boolean correct;
+import java.io.Serializable;
 
-    public HistoricalData(String prediction, double price, double lastPrice){
-        this.prediction=prediction;
-        this.price=price;
-        this.lastPrice=lastPrice;
-        this.timestamp=System.currentTimeMillis();
-        if (prediction.equals("OUT"))correct=true;
-        else if (prediction.equals("UP")&&price>lastPrice)correct=true;
-        else if (prediction.equals("DOWN")&&price<lastPrice)correct=true;
-        else correct=false;
+public class HistoricalData implements Serializable {
+    public String prediction;
+    public double currentPrice;
+    public double nextPrice=-1;
+    public long timestamp;
+    public boolean correct=false;
+
+    public HistoricalData(String prediction, double currentPrice) {
+        this.prediction = prediction;
+        this.currentPrice = currentPrice;
+//        this.lastPrice=lastPrice;
+        this.timestamp = System.currentTimeMillis();
     }
 
+    public void setNextPrice(double nextPrice) {
+        this.nextPrice = nextPrice;
+        if (prediction.equals("OUT")) correct = false;
+        else if (prediction.equals("UP") && currentPrice < nextPrice) correct = true;
+        else if (prediction.equals("DOWN") && currentPrice > nextPrice) correct = true;
+
+    }
 
     public boolean isCorrect() {
+        if (nextPrice==-1d)return false;
         return correct;
-    }
-
-    @Override
-    public String toString() {
-        return "HistoricalData{" +
-                "prediction='" + prediction + '\'' +
-                ", price=" + price +
-                ", lastPrice=" + lastPrice +
-                ", correct=" + correct +
-                '}';
     }
 }
