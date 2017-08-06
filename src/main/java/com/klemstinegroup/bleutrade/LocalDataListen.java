@@ -3,11 +3,24 @@ package com.klemstinegroup.bleutrade;
 import com.alphatica.genotick.genotick.MainModified;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
-import com.klemstinegroup.bleutrade.json.Balance;
-import com.klemstinegroup.bleutrade.json.Market;
-import com.klemstinegroup.bleutrade.json.Ticker;
+import org.knowm.xchange.Exchange;
+import org.knowm.xchange.ExchangeFactory;
+import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.bleutrade.BleutradeExchange;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.dto.Order;
+import org.knowm.xchange.dto.account.AccountInfo;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.knowm.xchange.dto.trade.MarketOrder;
+import org.knowm.xchange.service.account.AccountService;
+import org.knowm.xchange.service.marketdata.MarketDataService;
+//import com.klemstinegroup.bleutrade.json.Balance;
+//import com.klemstinegroup.bleutrade.json.Market;
+//import com.klemstinegroup.bleutrade.json.Ticker;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -28,15 +41,15 @@ public class LocalDataListen {
     public static ArrayList<HistoricalData> last500 = new ArrayList<HistoricalData>();
 
     static {
-        File file=new File("history.ser");
-        if (file.exists()){
+        File file = new File("history.ser");
+        if (file.exists()) {
             try {
-                last500=(ArrayList<HistoricalData>) Serializer.load(file);
+                last500 = (ArrayList<HistoricalData>) Serializer.load(file);
             } catch (Exception e) {
-                File file1=new File("history1.ser");
-                if (file1.exists()){
+                File file1 = new File("history1.ser");
+                if (file1.exists()) {
                     try {
-                        last500=(ArrayList<HistoricalData>) Serializer.load(file1);
+                        last500 = (ArrayList<HistoricalData>) Serializer.load(file1);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -226,42 +239,42 @@ public class LocalDataListen {
 
     private void predict(String prediction) {
         if (prediction == null) return;
-        ArrayList<Balance> balances = Http.getBalances();
-        double dogecoin = -1;
-        double bitcoin = -1;
-        for (Balance b : balances) {
-            if (b.getCurrency().equals(COIN2)) bitcoin = b.getAvailable();
-            if (b.getCurrency().equals(COIN1)) dogecoin = b.getAvailable();
-        }
-//        System.out.println(COIN1 + ":" + dogecoin + "\t" + COIN2 + ":" + bitcoin);
+        // get balance
+        //get currency
+        Exchange bleutrade = ExchangeFactory.INSTANCE.createExchange(BleutradeExchange.class.getName());
+        ExchangeSpecification exchangeSpecification = bleutrade.getDefaultExchangeSpecification();
+        exchangeSpecification.setApiKey(DataCollector.apikey);
+        exchangeSpecification.setSecretKey(DataCollector.apisecret);
+        bleutrade.applySpecification(exchangeSpecification);
+        MarketDataService marketDataService = bleutrade.getMarketDataService();
 
-        HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
-        ArrayList<Market> markets = new ArrayList<Market>();
-        ArrayList<Market> temp2 = new ArrayList<Market>();
+        CurrencyPair currencyPair=new CurrencyPair(COIN1, COIN2);
+
+        Ticker ticker = null;
         try {
-            temp2 = Http.getMarkets();
-        } catch (Exception e) {
+            ticker = marketDataService.getTicker(currencyPair);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        ArrayList<Market> temp3 = new ArrayList<Market>();
-        for (Market m : temp2) {
-            if (m.getIsActive()) temp3.add(m);
-        }
-        markets.clear();
-        markets.addAll(temp3);
 
-        ArrayList<String> al = new ArrayList<String>();
-        Market msaved = null;
-        for (Market m : markets) {
-            al.add(m.getMarketName());
-            if (m.getMarketName().equals(MARKET)) msaved = m;
+        AccountService accountService = bleutrade.getAccountService();
+        AccountInfo accountInfo = null;
+        try {
+            accountInfo = accountService.getAccountInfo();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        ArrayList<Ticker> tickers = Http.getTickers(al);
-        for (int i = 0; i < tickers.size(); i++) {
-            tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
-        }
-        double finalResult = bitcoin + dogecoin * tickerHM.get(MARKET).getBid();
-        String ss = dateFormat.format(new Date()) + "\t" + "FINAL: " + dfcoins.format(finalResult) + "\tPRE: " + prediction + "\t" + "PRICE: " + dfcoins.format(tickerHM.get(MARKET).getBid());
+//        ArrayList<Balance> balances = Http.getBalances();
+//        double dogecoin = -1;
+//        double bitcoin = -1;
+
+        double dogecoin = accountInfo.getWallet().getBalance(Currency.getInstance(COIN1)).getAvailable().doubleValue();
+        double bitcoin = accountInfo.getWallet().getBalance(Currency.getInstance(COIN2)).getAvailable().doubleValue();
+
+//        System.out.println(COIN1 + ":" + dogecoin + "\t" + COIN2 + ":" + bitcoin);
+
+        double finalResult = bitcoin + dogecoin * ticker.getBid().doubleValue();
+        String ss = dateFormat.format(new Date()) + "\t" + "FINAL: " + dfcoins.format(finalResult) + "\tPRE: " + prediction + "\t" + "PRICE: " + dfcoins.format(ticker.getBid().doubleValue());
         System.out.println(ss);
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(new File("predictions.txt"), true));
@@ -270,31 +283,46 @@ public class LocalDataListen {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        HistoricalData hs = new HistoricalData(prediction, tickerHM.get(MARKET).getBid());
-        if (last500.size()>0){
-            HistoricalData hd1=last500.get(last500.size()-1);
-            hd1.setNextPrice(tickerHM.get(MARKET).getBid());
+        HistoricalData hs = new HistoricalData(prediction, ticker.getBid().doubleValue());
+        if (last500.size() > 0) {
+            HistoricalData hd1 = last500.get(last500.size() - 1);
+            hd1.setNextPrice(ticker.getBid().doubleValue());
         }
         last500.add(hs);
-        File file=new File("history.ser");
+        File file = new File("history.ser");
         try {
-            Serializer.save(last500,file);
+            Serializer.save(last500, file);
         } catch (Exception e) {
         }
-        file=new File("history1.ser");
+        file = new File("history1.ser");
         try {
-            Serializer.save(last500,file);
+            Serializer.save(last500, file);
         } catch (Exception e) {
         }
 //        lastPrice = tickerHM.get(MARKET).getBid();
         while (last500.size() > histdatasize) last500.remove(0);
         if (prediction.equals("OUT")) return;
         if (prediction.equals("UP")) {      //BUY
-            double cc = (bitcoin / 10d) / tickerHM.get(MARKET).getAsk();
-            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getAsk(), cc, true);
+            double cc = (bitcoin / 10d) / ticker.getAsk().doubleValue();
+            //buy
+//            Http.buyselllimit(MARKET, ticker.getAsk().doubleValue(), cc, true);
+            MarketOrder mo=new MarketOrder(Order.OrderType.BID,new BigDecimal(cc),currencyPair);
+            try {
+                bleutrade.getTradeService().placeMarketOrder(mo);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         if (prediction.equals("DOWN")) {    //SELL
-            Http.buyselllimit(MARKET, tickerHM.get(MARKET).getBid(), dogecoin / 10d, false);
+            // sell
+            double cc=dogecoin / 10d;
+            MarketOrder mo=new MarketOrder(Order.OrderType.ASK,new BigDecimal(cc),currencyPair);
+            try {
+                bleutrade.getTradeService().placeMarketOrder(mo);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+// Http.buyselllimit(MARKET, ticker.getBid().doubleValue(), dogecoin / 10d, false);
         }
     }
 

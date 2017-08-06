@@ -1,13 +1,24 @@
 package com.klemstinegroup.bleutrade;
 
-import com.klemstinegroup.bleutrade.json.*;
-import com.klemstinegroup.bleutrade.json.Currency;
+//import com.klemstinegroup.bleutrade.json.*;
+//import com.klemstinegroup.bleutrade.json.Currency;
+
+import org.knowm.xchange.Exchange;
+import org.knowm.xchange.ExchangeFactory;
+import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.bleutrade.BleutradeExchange;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.knowm.xchange.service.marketdata.MarketDataService;
 
 import java.io.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.klemstinegroup.bleutrade.LocalDataListen.COIN1;
+import static com.klemstinegroup.bleutrade.LocalDataListen.COIN2;
 
 /**
  * Created by Paul on 4/16/2017.
@@ -16,9 +27,9 @@ public class DataCollector {
 
     ArrayList<Currency> currencies = new ArrayList<Currency>();
     HashMap<String, Double> currencyCost = new HashMap<String, Double>();
-    ArrayList<Market> markets = new ArrayList<Market>();
-    private ArrayList<Ticker> tickers = new ArrayList<Ticker>();
-    private HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
+//    ArrayList<Market> markets = new ArrayList<Market>();
+//    private ArrayList<Ticker> tickers = new ArrayList<Ticker>();
+//    private HashMap<String, Ticker> tickerHM = new HashMap<String, Ticker>();
 
     public static String apikey;
     public static String apisecret;
@@ -40,132 +51,40 @@ public class DataCollector {
 
         while (true) {
             try {
-                ArrayList<Currency> temp1 = null;
+                //get currency
+                Exchange bleutrade = ExchangeFactory.INSTANCE.createExchange(BleutradeExchange.class.getName());
+                ExchangeSpecification exchangeSpecification = bleutrade.getDefaultExchangeSpecification();
+                exchangeSpecification.setApiKey(DataCollector.apikey);
+                exchangeSpecification.setSecretKey(DataCollector.apisecret);
+                bleutrade.applySpecification(exchangeSpecification);
+                MarketDataService marketDataService = bleutrade.getMarketDataService();
+
+                Ticker ticker = null;
                 try {
-                    temp1 = Http.getCurrencies();
-                } catch (Exception e) {
+                    ticker=marketDataService.getTicker(new CurrencyPair(COIN1,COIN2));
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (temp1 == null) {
-                    System.out.println("Connection problems?");
-                    int cnt = 60;
-                    try {
-                        while (cnt > 0) {
-                            System.out.print((cnt--) + " ");
-                            Thread.sleep(1000);
-                        }
-                        System.out.println();
-                        continue;
-                    } catch (Exception e) {
-
-                    }
-                }
-                ArrayList<Currency> temp = new ArrayList<Currency>();
-                for (Currency c : temp1) {
-                    if (c.getIsActive() && !c.getMaintenanceMode()) temp.add(c);
-                }
-                currencies.clear();
-                currencies.addAll(temp);
-                for (Currency c : currencies) {
-                    currencyCost.put(c.getCurrency(), c.getTxFee());
-                }
-
-                ArrayList<Market> temp2 = null;
-                try {
-                    temp2 = Http.getMarkets();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (temp2 == null) {
-                    if (temp1 == null) {
-                        System.out.println("Connection problems?");
-                        int cnt = 60;
-                        try {
-                            while (cnt > 0) {
-                                System.out.print((cnt--) + " ");
-                                Thread.sleep(1000);
-                            }
-                            System.out.println();
-                            continue;
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }
-                ArrayList<Market> temp3 = new ArrayList<Market>();
-                for (Market m : temp2) {
-                    if (m.getIsActive()) temp3.add(m);
-                }
-                markets.clear();
-                markets.addAll(temp3);
-
-                ArrayList<String> al = new ArrayList<String>();
-                for (Market m : markets) {
-                    al.add(m.getMarketName());
-                }
-                try {
-                    tickers = Http.getTickers(al);
-                    for (int i = 0; i < tickers.size(); i++) {
-                        tickerHM.put(markets.get(i).getMarketName(), tickers.get(i));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (tickers == null || tickerHM == null || tickerHM.isEmpty()) {
-                    if (temp1 == null) {
-                        System.out.println("Connection problems?");
-                        int cnt = 60;
-                        try {
-                            while (cnt > 0) {
-                                System.out.print((cnt--) + " ");
-                                Thread.sleep(1000);
-                            }
-                            System.out.println();
-                            continue;
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }
-
-                long time = System.currentTimeMillis();
-                String allout = "";
-                String btcdge = "";
-                for (String s : tickerHM.keySet()) {
-                    String g1 = s.substring(0, s.indexOf('_'));
-                    String g2 = s.substring(s.indexOf('_') + 1);
-                    Ticker t = tickerHM.get(s);
-                    if (t == null) continue;
-                    double bid = t.getBid();
-                    double ask = t.getAsk();
+                    if (ticker == null) continue;
+                    double bid = ticker.getBid().doubleValue();
+                    double ask = ticker.getAsk().doubleValue();
                     double last = 0;
-                    if (t.getLast() != null) last = t.getLast();
+                    if (ticker.getLast() != null) last = ticker.getLast().doubleValue();
 //                try {
 //                    String writeOut=time+","+dfcoins.format(bid)+","+dfcoins.format(ask)+"\n";
-                    if ((g1.equals(LocalDataListen.COIN1)) && (g2.equals(LocalDataListen.COIN2))) {
-                        btcdge = time + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
-                    }
+                        String btcdge = ticker.getTimestamp().getTime() + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
 //                    allout = allout + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
-                }
+///                }
 //
                 FileWriter fwall = null;
                 try {
                     fwall = new FileWriter(new File("./data/all.txt"), true);
-                    fwall.write(btcdge + allout + "\n");
+                    fwall.write(btcdge + "\n");
                     fwall.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                HashMap<String, Double> hm = new HashMap<String, Double>();
 
-                for (int i = 0; i < markets.size(); i++) {
-                    Market m = markets.get(i);
-                    String g = m.getMarketName();
-                    hm.put(g, tickers.get(i).getAsk());
-                    String g1 = g.substring(0, g.indexOf('_'));
-                    String g2 = g.substring(g.indexOf('_') + 1);
-                    hm.put(g2 + "_" + g1, 1d / tickers.get(i).getAsk());
-                }
                 System.out.println("time=" + new Date());
 
                 new Thread(new Runnable() {
