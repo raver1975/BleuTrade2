@@ -92,7 +92,7 @@ public class SampleController {
                 "(adsbygoogle = window.adsbygoogle || []).push({});\n" +
                 "</script></div>";
 
-        content += "<div style=\" margin:0 auto;max-height:90%;width:90%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script></div>";
+        content += "<div style=\" margin:0 auto;max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script></div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
 //                DateFormat.SHORT, DateFormat.MEDIUM).format(lastTime) + "</div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
