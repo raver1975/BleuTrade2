@@ -314,7 +314,7 @@ public class LocalDataListen {
 //            Http.buyselllimit(MARKET, ticker.getAsk().doubleValue(), cc, true);
 //            LimitOrder mo=new LimitOrder(Order.OrderType.BID,new BigDecimal(cc),currencyPair);
             System.out.println("buying "+cc+" at "+dfcoins.format(ticker.getAsk().doubleValue()));
-            LimitOrder mo=new LimitOrder((Order.OrderType.BID), new BigDecimal(cc), currencyPair, null, null,new BigDecimal(ticker.getAsk().doubleValue()) );
+            LimitOrder mo=new LimitOrder((Order.OrderType.BID), new BigDecimal(dfcoins.format(cc)), currencyPair, null, null,new BigDecimal(dfcoins.format(ticker.getAsk().doubleValue())) );
             try {
                 String result =exchange.getTradeService().placeLimitOrder(mo);
                 System.out.println(result);
@@ -327,7 +327,7 @@ public class LocalDataListen {
             double cc=dogecoin / 10d;
 //            MarketOrder mo=new MarketOrder(Order.OrderType.ASK,new BigDecimal(cc),currencyPair);
             System.out.println("selling "+cc+" at "+dfcoins.format(ticker.getAsk().doubleValue()));
-            LimitOrder mo=new LimitOrder((Order.OrderType.BID), new BigDecimal(cc), currencyPair, null, null,new BigDecimal(ticker.getBid().doubleValue()) );
+            LimitOrder mo=new LimitOrder((Order.OrderType.BID), new BigDecimal(dfcoins.format(cc)), currencyPair, null, null,new BigDecimal(dfcoins.format(ticker.getBid().doubleValue())) );
 
             try {
                 exchange.getTradeService().placeLimitOrder(mo);
