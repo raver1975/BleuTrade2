@@ -72,6 +72,18 @@ public class SampleController {
                 "  }\n" +
                 "});";
         String content = "<html><head><script type=\"text/javascript\" src=\"https://github.com/chartjs/Chart.js/releases/download/v2.6.0/Chart.bundle.min.js\"></script></head><body>";
+        content+="<div width=\"100%\" height=\"200px\"><script async src=\"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>\n" +
+                "<!-- Predictor -->\n" +
+                "<ins class=\"adsbygoogle\"\n" +
+                "     style=\"display:block\"\n" +
+                "     data-ad-client=\"ca-pub-1813447557997883\"\n" +
+                "     data-ad-slot=\"8779058011\"\n" +
+                "     data-ad-format=\"auto\"></ins>\n" +
+                "<script>\n" +
+                "(adsbygoogle = window.adsbygoogle || []).push({});\n" +
+                "</script>";
+        content += "</body></html>";
+
         content += "<div style=\"max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script></div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
 //                DateFormat.SHORT, DateFormat.MEDIUM).format(lastTime) + "</div>";
@@ -82,8 +94,8 @@ public class SampleController {
 //        content += "<div>" + prediction + "</div>";
 //        content += "<div>" + correct + "/" + total + " correct</div>";
         int percent=(int)((correct*100)/total);
-        content+="<div style=\"color:red;z-index: 1; position: absolute; top: 75px; left: 100px; height:250px; width:500px;\"><h2>"+percent+"% Correct!</br>Next prediction: "+prediction+"</h2></div>";
-        content += "</body></html>";
+        content+="<div style=\"color:red;z-index: 1; position: absolute; top: 225px; left: 100px; height:250px; width:500px;\"><h2>"+percent+"% Correct!</br>Next prediction: "+prediction+"</h2></div>";
+        content+="<div></br><\br></br><\br>Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div>";
         return content;
     }
 
