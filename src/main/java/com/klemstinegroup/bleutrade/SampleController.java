@@ -102,7 +102,9 @@ public class SampleController {
 //                DateFormat.SHORT, DateFormat.MEDIUM).format(lastTime + DataCollector.timeout * 1000) + "</div>";
 //        content += "<div>" + prediction + "</div>";
 //        content += "<div>" + correct + "/" + total + " correct</div>";
-        int percent=(int)((correct*100)/total);
+
+        int percent=0;
+        if (total>0)percent=(int)((correct*100)/total);
         content+="<div style=\"z-index: 1; position: absolute; top: 150px; left: 25px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Next prediction: <span style=\"color:red;\">"+prediction+"</span></br>in "+timeLeft+"</h3></div>";
 
         content+="</br></br></br></br>";
