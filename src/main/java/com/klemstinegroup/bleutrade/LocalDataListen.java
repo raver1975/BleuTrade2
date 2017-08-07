@@ -244,7 +244,7 @@ public class LocalDataListen {
         //get currency
         Exchange exchange = null;
         try {
-            exchange = ExchangeFactory.INSTANCE.createExchange(Class.forName("org.knowm.xchange.bleutrade."+DataCollector.market+"Exchange").getName());
+            exchange = ExchangeFactory.INSTANCE.createExchange(Class.forName("org.knowm.xchange."+DataCollector.market.toLowerCase()+"."+DataCollector.market+"Exchange").getName());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
