@@ -158,61 +158,67 @@ public class LocalDataListen {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String oldString = "";
-                    long lastTime = System.currentTimeMillis();
+                    try {
+                        String oldString = "";
+                        long lastTime = System.currentTimeMillis();
 //                boolean final1 = false;
-                    boolean run = true;
-                    top:
-                    while (run) {
-                        String output = baos.toString();
-                        if (System.currentTimeMillis() - lastTime > 1200000) {
-                            System.setOut(old);
-                            System.out.println("Genotick timed out!");
-                            break top;
-                        }
+                        boolean run = true;
+                        top:
+                        while (run) {
+                            String output = baos.toString();
+                            if (System.currentTimeMillis() - lastTime > 1200000) {
+                                System.setOut(old);
+                                System.out.println("Genotick timed out!");
+                                break top;
+                            }
 //                    if (System.currentTimeMillis() - lastTime > 300000) {
 //                        final1 = true;
 //                        oldString = "";
 //                    }
-                        if (!output.equals(oldString)) {
-                            lastTime = System.currentTimeMillis();
-                            System.err.print(output.substring(oldString.length()));
-                            oldString = output;
-                            String[] split = output.split("\n");
+                            if (!output.equals(oldString)) {
+                                lastTime = System.currentTimeMillis();
+                                System.err.print(output.substring(oldString.length()));
+                                oldString = output;
+                                String[] split = output.split("\n");
 //                        System.err.println(split.length);
-                            Collections.reverse(Arrays.asList(split));
-                            if (split[0].startsWith("ended")) {
-                                for (String s : split) {
-                                    if (s.contains("all") && s.contains("prediction") && !s.contains("reverse_all")) {
-                                        System.setOut(old);
-                                        System.out.println("--------");
+                                Collections.reverse(Arrays.asList(split));
+                                if (split[0].startsWith("ended")) {
+                                    for (String s : split) {
+                                        if (s.contains("all") && s.contains("prediction") && !s.contains("reverse_all")) {
+                                            System.setOut(old);
+                                            System.out.println("--------");
 
-                                        double finalResult = -1;
-                                        try {
-                                            String[] pp = split[1].split(": ");
-                                            finalResult = Double.parseDouble(pp[1]);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                                            double finalResult = -1;
+                                            try {
+                                                String[] pp = split[1].split(": ");
+                                                finalResult = Double.parseDouble(pp[1]);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                            String prediction = s.substring(s.indexOf(": ") + 2);
+                                            if (prediction.startsWith("OUT")) prediction = "OUT";
+                                            if (prediction.startsWith("DOWN")) prediction = "DOWN";
+                                            if (prediction.startsWith("UP")) prediction = "UP";
+                                            predict(prediction);
+                                            break top;
                                         }
-                                        String prediction = s.substring(s.indexOf(": ") + 2);
-                                        if (prediction.startsWith("OUT")) prediction = "OUT";
-                                        if (prediction.startsWith("DOWN")) prediction = "DOWN";
-                                        if (prediction.startsWith("UP")) prediction = "UP";
-                                        predict(prediction);
-                                        break top;
                                     }
                                 }
                             }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        System.setOut(old);
+                        System.out.println("genotick finished");
+                    }catch (Exception e){
+                        System.setOut(old);
+                        System.out.println("-------------------");
+                        e.printStackTrace();
+                        System.out.println("-------------------");
                     }
-                    System.setOut(old);
-                    System.out.println("genotick finished");
-
                 }
             }).start();
 

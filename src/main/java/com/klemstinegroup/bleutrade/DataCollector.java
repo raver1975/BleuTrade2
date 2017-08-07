@@ -52,8 +52,6 @@ public class DataCollector {
         while (true) {
             try {
                 //get currency
-
-                System.out.println(BleutradeExchange.class.getName());
                 Exchange exchange = ExchangeFactory.INSTANCE.createExchange(Class.forName("org.knowm.xchange." + market.toLowerCase() + "." + market + "Exchange").getName());
                 ExchangeSpecification exchangeSpecification = exchange.getDefaultExchangeSpecification();
                 exchangeSpecification.setApiKey(DataCollector.apikey);

@@ -43,7 +43,10 @@ class ConsoleOutput implements UserOutput {
 
     @Override
     public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
-        log(format("Cumulative profit for %s: %d", name.getName(), profit));
+        try {
+            log(format("Cumulative profit for %s: %d", name.getName(), profit));
+        }
+        catch(Exception e){}
     }
 
     @Override
