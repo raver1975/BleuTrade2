@@ -36,6 +36,8 @@ dependencies {
 
     compile 'org.knowm.xchange:xchange-core:4.2.1'
     compile 'org.knowm.xchange:xchange-bleutrade:4.2.1'
+    compile 'org.knowm.xchange:xchange-poloniex:4.2.1'
+
 
 //    compile group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version: '1.13.1'
 //    compile group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.8.0'
