@@ -327,8 +327,8 @@ public class LocalDataListen {
             // sell
             double cc=dogecoin / 10d;
 //            MarketOrder mo=new MarketOrder(Order.OrderType.ASK,new BigDecimal(cc),currencyPair);
-            System.out.println("selling "+cc+" at "+dfcoins.format(ticker.getAsk().doubleValue()));
-            LimitOrder mo=new LimitOrder((Order.OrderType.BID), new BigDecimal(dfcoins.format(cc)), currencyPair, null, null,new BigDecimal(dfcoins.format(ticker.getBid().doubleValue())) );
+            System.out.println("selling "+cc+" at "+dfcoins.format(ticker.getBid().doubleValue()));
+            LimitOrder mo=new LimitOrder((Order.OrderType.ASK), new BigDecimal(dfcoins.format(cc)), currencyPair, null, null,new BigDecimal(dfcoins.format(ticker.getBid().doubleValue())) );
 
             try {
                 exchange.getTradeService().placeLimitOrder(mo);
