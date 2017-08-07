@@ -45,16 +45,16 @@ public class DataCollector {
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
-    public DataCollector(){
+    public DataCollector() {
         getSecret();
-        if (!new File("./data").exists())new File("./data").mkdir();
+        if (!new File("./data").exists()) new File("./data").mkdir();
 
         while (true) {
             try {
                 //get currency
 
                 System.out.println(BleutradeExchange.class.getName());
-                Exchange exchange = ExchangeFactory.INSTANCE.createExchange(Class.forName("org.knowm.xchange.bleutrade."+market+"Exchange").getName());
+                Exchange exchange = ExchangeFactory.INSTANCE.createExchange(Class.forName("org.knowm.xchange." + market.toLowerCase() + "." + market + "Exchange").getName());
                 ExchangeSpecification exchangeSpecification = exchange.getDefaultExchangeSpecification();
                 exchangeSpecification.setApiKey(DataCollector.apikey);
                 exchangeSpecification.setSecretKey(DataCollector.apisecret);
@@ -63,18 +63,18 @@ public class DataCollector {
 
                 Ticker ticker = null;
                 try {
-                    ticker=marketDataService.getTicker(new CurrencyPair(COIN1,COIN2));
+                    ticker = marketDataService.getTicker(new CurrencyPair(COIN1, COIN2));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                    if (ticker == null) continue;
-                    double bid = ticker.getBid().doubleValue();
-                    double ask = ticker.getAsk().doubleValue();
-                    double last = 0;
-                    if (ticker.getLast() != null) last = ticker.getLast().doubleValue();
+                if (ticker == null) continue;
+                double bid = ticker.getBid().doubleValue();
+                double ask = ticker.getAsk().doubleValue();
+                double last = 0;
+                if (ticker.getLast() != null) last = ticker.getLast().doubleValue();
 //                try {
 //                    String writeOut=time+","+dfcoins.format(bid)+","+dfcoins.format(ask)+"\n";
-                        String btcdge = ticker.getTimestamp().getTime() + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
+                String btcdge = System.currentTimeMillis() + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
 //                    allout = allout + "," + dfcoins.format(bid) + "," + dfcoins.format(ask);
 ///                }
 //
@@ -97,8 +97,7 @@ public class DataCollector {
                 }).start();
 
                 System.out.println("waiting for " + timeout + "s");
-            }
-            catch (Exception ee){
+            } catch (Exception ee) {
                 ee.printStackTrace();
             }
             try {
@@ -108,16 +107,14 @@ public class DataCollector {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(dateFormat.format(new Date())+"\t"+"-------------------------------------------------------------------------------------------------");
-
-
+            System.out.println(dateFormat.format(new Date()) + "\t" + "-------------------------------------------------------------------------------------------------");
 
 
         }//end of while loop
 
     }
 
-    public void getSecret(){
+    public void getSecret() {
         Properties prop = new Properties();
 
         InputStream input;
@@ -126,12 +123,12 @@ public class DataCollector {
             prop.load(input);
             apikey = prop.getProperty("apikey");
             apisecret = prop.getProperty("apisecret");
-            timeout =Long.parseLong(prop.getProperty("dataCollectTimeoutSeconds"));
+            timeout = Long.parseLong(prop.getProperty("dataCollectTimeoutSeconds"));
             debug = Boolean.parseBoolean(prop.getProperty("debug"));
-            bots=Integer.parseInt(prop.getProperty("bots"));
-            market=prop.getProperty("market");
-            coin1=prop.getProperty("coin1");
-            coin2=prop.getProperty("coin2");
+            bots = Integer.parseInt(prop.getProperty("bots"));
+            market = prop.getProperty("market");
+            coin1 = prop.getProperty("coin1");
+            coin2 = prop.getProperty("coin2");
 
             System.out.println("apikey=" + apikey);
             System.out.println("apisecret=" + apisecret);
