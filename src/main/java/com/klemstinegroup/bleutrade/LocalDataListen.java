@@ -314,7 +314,7 @@ public class LocalDataListen {
         }
 //        lastPrice = tickerHM.get(MARKET).getBid();
         while (last500.size() > histdatasize) last500.remove(0);
-        if (prediction.equals("OUT")) return;
+        if (prediction.equals("OUT")||DataCollector.debug) return;
         if (prediction.equals("UP")) {      //BUY
             double cc = (bitcoin / 10d) / ticker.getAsk().doubleValue();
             //buy
