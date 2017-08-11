@@ -104,7 +104,7 @@ public class SampleController {
 
         int percent=0;
         if (total>0)percent=(int)((correct*100)/total);
-        content+="<div style=\"z-index: 1; position: absolute; top: 150px; left: 25px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Next prediction: <span style=\"color:red;\">"+prediction+"</span></br>in "+timeLeft+"</h3></div>";
+        content+="<div style=\"z-index: 1; position: absolute; top: 150px; left: 25px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Current prediction: <span style=\"color:red;\">"+prediction+"</span></br>Next in "+timeLeft+"</h3></div>";
 
         content+="</br></br></br></br>";
         content+="<div><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
