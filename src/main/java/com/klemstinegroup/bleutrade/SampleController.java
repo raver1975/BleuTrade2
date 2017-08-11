@@ -52,7 +52,7 @@ public class SampleController {
         long millis=(lastTime + DataCollector.timeout * 1000)-System.currentTimeMillis();
         if (millis<1000)millis=1000;
         int refresh= (int) (millis/1000);
-        if (refresh>60)refresh+=60;
+        if (refresh<30)refresh=30;
         String timeLeft=String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(millis),
                 TimeUnit.MILLISECONDS.toSeconds(millis) -
