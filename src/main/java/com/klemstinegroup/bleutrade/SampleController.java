@@ -40,7 +40,7 @@ public class SampleController {
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",";
             data += "{x:\"" + DateFormat.getDateTimeInstance(
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",y:" + hd.currentPrice + "},";
-            if (hd.prediction.equals("OUT"))pointBackgroundColor+="\"#aaaaaa\",";
+            if (hd.prediction.equals("OUT")||hd.equals(LocalDataListen.last500.get(LocalDataListen.last500.size()-1)))pointBackgroundColor+="\"#aaaaaa\",";
             else pointBackgroundColor += hd.isCorrect() ? "\"#00ff00\"," : "\"#ff0000\",";
             lastTime = hd.timestamp;
             prediction = hd.prediction;
