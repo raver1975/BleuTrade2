@@ -81,7 +81,7 @@ public class SampleController {
                 "    }\n" +
                 "  }\n" +
                 "});";
-        String content = "<html><head><meta http-equiv=\"refresh\" content=\""+refresh+"\"><script type=\"text/javascript\" src=\"https://github.com/chartjs/Chart.js/releases/download/v2.6.0/Chart.bundle.min.js\"></script></head><body> <div style=\"width:100%; margin:0 auto;text-align:center;\">";
+        String content = "<html><head><meta http-equiv=\"refresh\" content=\""+refresh+"\"><script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js\"></script></head><body> <div style=\"width:100%; margin:0 auto;text-align:center;\">";
         content+="<div width=\"100%\" height=\"200px\"><script async src=\"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>\n" +
                 "<!-- Predictor -->\n" +
                 "<ins class=\"adsbygoogle\"\n" +
