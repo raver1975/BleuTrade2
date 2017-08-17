@@ -93,7 +93,11 @@ public class SampleController {
                 "(adsbygoogle = window.adsbygoogle || []).push({});\n" +
                 "</script></div>";
 
-        content += "<div style=\" margin:0 auto;max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script></div>";
+        content += "<div style=\" margin:0 auto;max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script>";
+        content+="<div style=\"text-align:center;width:100%\"><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
+        content+="<div style=\"text-align:center;width:100%\"><a href=\"mailto:paulklemstine@gmail.com\">&copy;2017 Paul Klemstine</a></div>";
+        content+="<div style=\"text-align:center;width:100%\">Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div></div>";
+                content+="</div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
 //                DateFormat.SHORT, DateFormat.MEDIUM).format(lastTime) + "</div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
@@ -105,11 +109,9 @@ public class SampleController {
 
         int percent=0;
         if (total>0)percent=(int)((correct*100)/total);
-        content+="<br/><br/><br/><br/>";
-        content+="<div style=\"z-index: 1; position: absolute; top: 150px; left: 25px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Current prediction: <span style=\"color:red;\">"+prediction+"</span></br>Next in "+timeLeft+"</h3></div>";
-        content+="<div style=\"text-align:center;width:100%\"><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
-        content+="<div style=\"text-align:center;width:100%\"><a href=\"mailto:paulklemstine@gmail.com\">&copy;2017 Paul Klemstine</a></div>";
-        content+="<div style=\"text-align:center;width:100%\">Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div></div>";
+        content+="<div style=\"z-index: 1; position: absolute; top: 175px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Current prediction: <span style=\"color:red;\">"+prediction+"</span></br>Next in "+timeLeft+"</h3></div>";
+
+
         content += "</body></html>";
         return content;
     }
