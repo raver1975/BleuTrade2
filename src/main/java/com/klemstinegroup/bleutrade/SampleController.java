@@ -108,10 +108,10 @@ public class SampleController {
         content+="<div style=\"z-index: 1; position: absolute; top: 150px; left: 25px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Current prediction: <span style=\"color:red;\">"+prediction+"</span></br>Next in "+timeLeft+"</h3></div>";
 
         content+="</br></br></br></br>";
-        content+="<div><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
+        content+="</div><div><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
         content+="<div><a href=\"mailto:paulklemstine@gmail.com\">&copy;2017 Paul Klemstine</a></div>";
         content+="<div>Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div>";
-        content += "</div></body></html>";
+        content += "</body></html>";
         return content;
     }
 
