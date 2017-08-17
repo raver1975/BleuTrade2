@@ -39,7 +39,7 @@ public class LocalDataListen {
     int dataSizeLimit = 500;
     static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    public static int histdatasize = 101;
+    public static int histdatasize = 201;
     public static ArrayList<HistoricalData> last500 = new ArrayList<HistoricalData>();
 
     static {
