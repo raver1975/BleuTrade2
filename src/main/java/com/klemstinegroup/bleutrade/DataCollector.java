@@ -78,7 +78,7 @@ public class DataCollector {
 //
                 FileWriter fwall = null;
                 try {
-                    fwall = new FileWriter(new File("./data/all.txt"), true);
+                    fwall = new FileWriter(new File("./data/all.csv"), true);
                     fwall.write(btcdge + "\n");
                     fwall.close();
                 } catch (IOException e) {

@@ -31,7 +31,7 @@ import java.util.*;
 public class LocalDataListen {
     PrintStream old = System.out;
     ArrayList<PriceData> priceData = new ArrayList<PriceData>();
-    String file = "./data/all.txt";
+    String file = "./data/all.csv";
     //    static final String MARKET = "ETH_BTC";
     static String COIN1 = DataCollector.coin1;
     static String COIN2 = DataCollector.coin2;
@@ -73,8 +73,8 @@ public class LocalDataListen {
 
     public LocalDataListen() {
         try {
-            if (new File("data/reverse_all.txt").exists()) {
-                new File("data/reverse_all.txt").delete();
+            if (new File("data/reverse_all.csv").exists()) {
+                new File("data/reverse_all.csv").delete();
             }
             File[] list = new File(".").listFiles();
             for (File f : list) {
