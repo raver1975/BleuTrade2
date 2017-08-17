@@ -50,8 +50,9 @@ public class SampleController {
         if (pointBackgroundColor.length() > 0)
             pointBackgroundColor = pointBackgroundColor.substring(0, pointBackgroundColor.length() - 1);
         long millis=(lastTime + DataCollector.timeout * 1000)-System.currentTimeMillis();
-        if (millis<30000)millis=30000;
+        if (millis<0)millis=0;
         int refresh= (int) (millis/1000);
+        if (refresh<30)refresh=30;
         String timeLeft=String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(millis),
                 TimeUnit.MILLISECONDS.toSeconds(millis) -
