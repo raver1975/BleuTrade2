@@ -79,9 +79,9 @@ public class Simulation {
 
     private Population wirePopulation(MainSettings settings) {
         PopulationDAO dao = PopulationDAOFactory.getDefaultDAO(settings.populationDAO);
-        Population population = PopulationFactory.getDefaultPopulation(dao);
-        population.setDesiredSize(settings.populationDesiredSize);
-        return population;
+        Population p = PopulationFactory.getDefaultPopulation(dao);
+        p.setDesiredSize(settings.populationDesiredSize);
+        return p;
     }
 
     private RobotBreeder wireBreeder(MainSettings settings, Mutator mutator) {

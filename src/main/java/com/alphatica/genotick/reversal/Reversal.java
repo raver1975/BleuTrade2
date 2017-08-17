@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static java.lang.String.format;
+
 public class Reversal {
     private final String reverseValue;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
@@ -55,10 +57,10 @@ public class Reversal {
     }
 
     private static String getReverseFileName(DataSetName name) {
-        Path full = Paths.get(name.getName());
+        Path full = Paths.get(name.getPath());
         Path parent = full.getParent();
-        String newName = "reverse_" + full.getFileName().toString()+".txt";
-        return Paths.get("data/", newName).toString();
+        String newName = "reverse_" + full.getFileName().toString();
+        return Paths.get(parent.toString(), newName).toString();
     }
 
     private static List<Number[]> reverseList(List<Number[]> original) {
@@ -131,6 +133,7 @@ public class Reversal {
                 bw.write(row + "\n");
             }
         } catch (IOException e) {
+            UserInputOutputFactory.getUserOutput().errorMessage(format("Exception while reversing file: %s", e.getMessage()));
             e.printStackTrace();
         }
     }

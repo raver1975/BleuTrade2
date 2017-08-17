@@ -1,6 +1,7 @@
 package com.klemstinegroup.bleutrade;
 
-import com.alphatica.genotick.genotick.MainModified;
+//import com.alphatica.genotick.genotick.MainModified;
+import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 import org.knowm.xchange.Exchange;
@@ -223,7 +224,7 @@ public class LocalDataListen {
             }).start();
 
             try {
-                MainModified.main(new String[]{});
+                Main.main(new String[]{});
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

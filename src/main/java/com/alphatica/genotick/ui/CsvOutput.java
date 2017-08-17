@@ -54,7 +54,7 @@ public class CsvOutput implements UserOutput {
     public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
         File file = new File(format("%s_%s_cumulative.csv", name.getName(),  pidString));
         try {
-            FileUtils.writeLines(file, Collections.singletonList(format("%d,%s", timePoint.getValue(), profit)));
+            FileUtils.writeLines(file, Collections.singletonList(format("%d,%s", timePoint.getValue(), profit)), true);
         } catch (IOException e) {
             throw new RuntimeException("Unable to write to file " + file.getAbsolutePath(), e);
         }

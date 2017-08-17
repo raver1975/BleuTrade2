@@ -59,49 +59,34 @@ public class MainAppData {
     public TimePoint getFirstTimePoint() {
         if (sets.isEmpty())
             return null;
-        TimePoint firstTimePoint = null;
-        for (DataSet set : sets.values()) {
-            TimePoint first = set.getFirstTimePoint();
-            if (firstTimePoint == null) {
-                firstTimePoint = first;
-            } else if (first.compareTo(firstTimePoint) < 0) {
-                firstTimePoint = first;
-            }
+        return timePoints.get(0);
+    }
+
+    public TimePoint getNextTimePint(TimePoint now) {
+        int index = binarySearch(timePoints, now);
+        if(index < 0) {
+            index = Math.abs(index + 1);
         }
-        return firstTimePoint;
+        if(index > timePoints.size() - 2) {
+            return null;
+        } else  {
+            return timePoints.get(index+1);
+        }
     }
 
     public TimePoint getLastTimePoint() {
         if (sets.isEmpty())
             return null;
-        TimePoint lastTimePoint = null;
-        for (DataSet set : sets.values()) {
-            TimePoint last = set.getLastTimePoint();
-            if (lastTimePoint == null) {
-                lastTimePoint = last;
-            } else if (last.compareTo(lastTimePoint) > 0) {
-                lastTimePoint = last;
-            }
-        }
-        return lastTimePoint;
+        return timePoints.get(timePoints.size()-1);
     }
+
 
     public Collection<DataSet> listSets() {
         return sets.values();
     }
 
-
     boolean isEmpty() {
         return sets.isEmpty();
-    }
-
-    public TimePoint getNextTimePint(TimePoint now) {
-        int index = binarySearch(timePoints, now);
-        if(index < 0 || index > timePoints.size() - 2) {
-            return null;
-        } else  {
-            return timePoints.get(index+1);
-        }
     }
 
 }

@@ -18,7 +18,7 @@ public class DataSet {
     private final DataSetName name;
 
     public DataSet(List<Number []> lines, String fileName) {
-        this.name = new DataSetName(processFileName(fileName));
+        this.name = new DataSetName(fileName);
         timePoints = new TimePoint[lines.size()];
         values = new ArrayList<>();
 
@@ -31,11 +31,6 @@ public class DataSet {
             fillFirstNumberAsTimePoint(lineNumber, line);
             fillValuesArrays(lineNumber, line, firstLineCount);
         }
-    }
-
-    private String processFileName(String fileName) {
-        Path path = Paths.get(fileName);
-        return FilenameUtils.removeExtension(path.getFileName().toString());
     }
 
     public DataSetName getName() {
@@ -120,14 +115,6 @@ public class DataSet {
             line[i] = values.get(i-1)[lineNumber];
         }
         return line;
-    }
-
-    public TimePoint getFirstTimePoint() {
-        return timePoints[0];
-    }
-
-    public TimePoint getLastTimePoint() {
-        return timePoints[timePoints.length -1];
     }
 
     @Override

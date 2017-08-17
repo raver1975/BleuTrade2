@@ -17,9 +17,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainModified {
+public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
-    private static final String VERSION = "Genotick version 0.11-SNAPSHOT (copyleft 2017)";
+    private static final String VERSION = "Genotick version 0.17 (copyleft 2017)";
     private static UserInput input;
     private static UserOutput output;
 
@@ -138,7 +138,7 @@ public class MainModified {
 
     private static void checkVersionRequest(Parameters parameters) {
         if (parameters.getValue("showVersion") != null) {
-            System.out.println(MainModified.VERSION);
+            System.out.println(Main.VERSION);
             System.exit(0);
         }
     }

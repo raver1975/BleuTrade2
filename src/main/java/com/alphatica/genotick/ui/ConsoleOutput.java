@@ -43,10 +43,7 @@ class ConsoleOutput implements UserOutput {
 
     @Override
     public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
-        try {
-            log(format("Cumulative profit for %s: %d", name.getName(), profit));
-        }
-        catch(Exception e){}
+        log(format("Cumulative profit for %s: %.2f", name.getPath(), profit));
     }
 
     @Override
@@ -57,7 +54,7 @@ class ConsoleOutput implements UserOutput {
     private void log(String string) {
         System.out.println(string);
 //        try {
-//            FileUtils.writeStringToFile(logFile, string + System.lineSeparator(), Charset.defaultCharset().toString());
+//            FileUtils.write(logFile, string + System.lineSeparator(), Charset.defaultCharset(),true);
 //        } catch (IOException e) {
 //
 //            System.err.println("Unable to write to file " + logFile.getPath() + ": " + e.getMessage());

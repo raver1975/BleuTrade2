@@ -1,6 +1,7 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
+import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 
@@ -39,7 +40,6 @@ class FileInput extends BasicUserInput {
             checkAllSettingsParsed(map,parsedKeys);
             return settings;
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("Unable to read file " + fileName, e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -115,7 +115,7 @@ class FileInput extends BasicUserInput {
     }
 
     private String getDataDir(Map<String, String> map, Set<String> parsedKeys) {
-        String dataDir = "data";;
+        String dataDir = Main.DEFAULT_DATA_DIR;
         if(map.containsKey(DATA_DIRECTORY_KEY)) {
             dataDir = map.get(DATA_DIRECTORY_KEY);
             parsedKeys.add(DATA_DIRECTORY_KEY);

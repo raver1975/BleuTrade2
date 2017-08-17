@@ -1,17 +1,25 @@
 package com.alphatica.genotick.data;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.Serializable;
 
 public class DataSetName implements Serializable{
     private static final long serialVersionUID = -7504682119928833833L;
+    private final String path;
     private final String name;
-    public DataSetName(String name) {
-        this.name = name;
+    public DataSetName(String path) {
+        this.path = path;
+        this.name = FilenameUtils.getBaseName(path);
     }
 
     @Override
     public String toString() {
-        return name;
+        return path;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public String getName() {
@@ -25,11 +33,11 @@ public class DataSetName implements Serializable{
         if (o == null || getClass() != o.getClass())
             return false;
         DataSetName that = (DataSetName) o;
-        return name.equals(that.name);
+        return path.equals(that.path);
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return path.hashCode();
     }
 }

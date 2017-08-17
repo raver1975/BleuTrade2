@@ -98,7 +98,7 @@ class ProfitRecorder {
         if(correct + incorrect > 0) {
             double percentCorrect = (double) correct / (correct + incorrect);
             UserInputOutputFactory.getUserOutput()
-                    .infoMessage(format("Percent correct for %s: %f %%", dataSet.getName().getName(), percentCorrect));
+                    .infoMessage(format("Percent correct for %s: %f %%", dataSet.getName().getPath(), percentCorrect));
         }
     }
 }
