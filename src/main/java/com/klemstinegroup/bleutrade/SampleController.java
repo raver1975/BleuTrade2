@@ -75,6 +75,7 @@ public class SampleController {
                 "        display: false\n" +
                 "    }," +
                 "    title: {\n" +
+                "      fontSize:50,"+
                 "      display: true,\n" +
                 "      text: '" + DataCollector.market + " " + DataCollector.coin1 + "_" + DataCollector.coin2 + " Prediction'\n" +
                 "    }\n" +
