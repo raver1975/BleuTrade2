@@ -109,7 +109,7 @@ public class SampleController {
 
         int percent=0;
         if (total>0)percent=(int)((correct*100)/total);
-        content+="<div style=\"z-index: 1; position: absolute; top: 175px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Current prediction: <span style=\"color:red;\">"+prediction+"</span></br>Next in "+timeLeft+"</h3></div>";
+        content+="<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Current prediction: <span style=\"color:red;\">"+prediction+"</span></br>Next in "+timeLeft+"</h3></div>";
 
 
         content += "</body></html>";
