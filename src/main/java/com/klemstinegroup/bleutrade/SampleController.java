@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 
 @Controller
@@ -23,6 +25,7 @@ public class SampleController {
     @RequestMapping("/")
     @ResponseBody
     String home() {
+        NumberFormat formatter = new DecimalFormat("#0.00");
         File f = new File("predictions.txt");
         String labels = "";
         String data = "";
@@ -31,6 +34,7 @@ public class SampleController {
         int correct = 0;
         long lastTime = 0;
         String prediction = "";
+        double gain=0;
         for (HistoricalData hd : LocalDataListen.last500) {
             if (!hd.prediction.equals("OUT")){
                 total++;
@@ -42,6 +46,9 @@ public class SampleController {
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",y:" + hd.currentPrice + "},";
             if (hd.prediction.equals("OUT")||hd.equals(LocalDataListen.last500.get(LocalDataListen.last500.size()-1)))pointBackgroundColor+="\"#aaaaaa\",";
             else pointBackgroundColor += hd.isCorrect() ? "\"#00ff00\"," : "\"#ff0000\",";
+            double tempGain=Math.abs(hd.nextPrice-hd.currentPrice);
+            if (hd.isCorrect())gain+=tempGain;
+            else gain=-tempGain;
             lastTime = hd.timestamp;
             prediction = hd.prediction;
         }
@@ -110,7 +117,9 @@ public class SampleController {
 
         int percent=0;
         if (total>0)percent=(int)((correct*100)/total);
-        content+="<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span></br>Current prediction: <span style=\"color:red;\">"+prediction+"</span></br>Next in "+timeLeft+"</h3></div>";
+        String color="red";
+        if (gain>0)color="green";
+        content+="<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:red;\">"+percent+"% Correct!</span><br/>Gain/Loss: <span style=\"color:"+color+";\">"+formatter.format(gain)+"</span><br/>Current prediction: <span style=\"color:red;\">"+prediction+"</span><br/>Next in "+timeLeft+"</h3></div>";
 
 
         content += "</body></html>";
