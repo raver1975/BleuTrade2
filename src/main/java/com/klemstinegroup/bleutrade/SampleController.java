@@ -104,7 +104,7 @@ public class SampleController {
         content += "<div style=\" margin:0 auto;max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script>";
         content+="<div style=\"text-align:center;width:100%\"><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
         content+="<div style=\"text-align:center;width:100%\"><a href=\"mailto:paulklemstine@gmail.com\">&copy;2017 Paul Klemstine</a></div>";
-        content+="<div style=\"text-align:center;width:100%\">Donate Ethereum: 0x9f6620ff0ae9ff2aa9ee8a320c818ff0004853ed</div></div>";
+        content+="<div style=\"text-align:center;width:100%\">Donate Ethereum: 0x0f209f410548D17E8760D39fb84E7B8dd2e002BC</div></div>";
                 content+="</div>";
 //        content += "<div>" + DateFormat.getDateTimeInstance(
 //                DateFormat.SHORT, DateFormat.MEDIUM).format(lastTime) + "</div>";
