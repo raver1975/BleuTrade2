@@ -28,4 +28,8 @@ public class HistoricalData implements Serializable {
         if (nextPrice==-1d)return false;
         return correct;
     }
+
+    public boolean hasNext(){
+        return nextPrice!=-1;
+    }
 }
