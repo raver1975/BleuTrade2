@@ -120,9 +120,11 @@ public class SampleController {
 
         int percent = 0;
         if (total > 0) percent = (int) ((correct * 100) / total);
-        String color = "red";
-        if (gain > 0) color = "green";
-        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:red;\">" + percent + "% Correct!</span><br/>Gain/Loss: <span style=\"color:" + color + ";\">" + formatter.format(gain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
+        String colorCorrect = "red";
+        if (percent> 50) colorCorrect = "green";
+        String colorGain = "red";
+        if (gain > 0) colorGain = "green";
+        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:"+colorCorrect+";\">" + percent + "% Correct!</span><br/>Gain/Loss: <span style=\"color:" + colorGain + ";\">" + formatter.format(gain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
 
 
         content += "</body></html>";
