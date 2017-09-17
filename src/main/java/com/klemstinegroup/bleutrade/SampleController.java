@@ -19,7 +19,7 @@ public class SampleController {
     @ResponseBody
     String api() {
         HistoricalData hd = LocalDataListen.last500.get(LocalDataListen.last500.size() - 1);
-        return "{\"expires\":" + (hd.timestamp + DataCollector.timeout * 1000) + ", \"time\":\"" + hd.timestamp + "\", \"prediction\":" + hd.prediction + ", \"currentPrice\":\"" + hd.currentPrice + "\" }";
+        return "{\"expires\":" + (hd.timestamp + DataCollector.timeout * 1000) + ", \"time\":\"" + hd.timestamp + "\", \"prediction\":" + hd.virtualPrediction + ", \"currentPrice\":\"" + hd.currentPrice + "\" }";
     }
 
     @RequestMapping("/")
@@ -36,7 +36,7 @@ public class SampleController {
         String prediction = "";
         double gain = 0;
         for (HistoricalData hd : LocalDataListen.last500) {
-            if (!hd.prediction.equals("OUT")) {
+            if (!hd.virtualPrediction.equals("OUT")) {
                 total++;
                 if (hd.correct) correct++;
             }
@@ -44,16 +44,16 @@ public class SampleController {
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",";
             data += "{x:\"" + DateFormat.getDateTimeInstance(
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",y:" + hd.currentPrice + "},";
-            if (hd.prediction.equals("OUT") || hd.equals(LocalDataListen.last500.get(LocalDataListen.last500.size() - 1)))
+            if (hd.virtualPrediction.equals("OUT") || hd.equals(LocalDataListen.last500.get(LocalDataListen.last500.size() - 1)))
                 pointBackgroundColor += "\"#aaaaaa\",";
             else pointBackgroundColor += hd.isCorrect() ? "\"#00ff00\"," : "\"#ff0000\",";
-            if (!(hd.prediction.equals("OUT") || !hd.hasNext())) {
+            if (!(hd.virtualPrediction.equals("OUT") || !hd.hasNext())) {
                 double tempGain = 1000.0 * Math.abs(hd.nextPrice - hd.currentPrice);
                 if (hd.isCorrect()) gain += tempGain;
                 else gain = -tempGain;
             }
             lastTime = hd.timestamp;
-            prediction = hd.prediction;
+            prediction = hd.virtualPrediction;
         }
         if (labels.length() > 0) labels = labels.substring(0, labels.length() - 1);
         if (data.length() > 0) data = data.substring(0, data.length() - 1);

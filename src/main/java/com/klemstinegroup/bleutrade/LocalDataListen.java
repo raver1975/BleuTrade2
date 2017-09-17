@@ -298,6 +298,16 @@ public class LocalDataListen {
             e.printStackTrace();
         }
         HistoricalData hs = new HistoricalData(prediction, ticker.getBid().doubleValue());
+        int total=0;
+        int correct=0;
+        for (HistoricalData hd : LocalDataListen.last500) {
+            if (!hd.realPrediction.equals("OUT")) {
+                total++;
+                if (hd.correct) correct++;
+            }
+        }
+        total--;
+        if (correct<total/2)hs.reversePrediction();
         if (last500.size() > 0) {
             HistoricalData hd1 = last500.get(last500.size() - 1);
             hd1.setNextPrice(ticker.getBid().doubleValue());
