@@ -307,7 +307,7 @@ public class LocalDataListen {
             }
         }
         total--;
-        if (correct<total/2)hs.reversePrediction();
+        if (correct<total/2&&Math.random()<.5d)hs.reversePrediction();
         if (last500.size() > 0) {
             HistoricalData hd1 = last500.get(last500.size() - 1);
             hd1.setNextPrice(ticker.getBid().doubleValue());
