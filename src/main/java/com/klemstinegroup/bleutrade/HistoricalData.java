@@ -38,7 +38,7 @@ public class HistoricalData implements Serializable {
 
     public void reversePrediction() {
         if (realPrediction.equals("OUT")) return;
-        if (realPrediction.equals("UP")){ virtualPrediction = "DOWN";
+        if (realPrediction.equals("UP")) virtualPrediction = "DOWN";
         if (realPrediction.equals("DOWN")) virtualPrediction = "UP";
 
     }
