@@ -30,16 +30,9 @@ public class SampleController {
         String labels = "";
         String data = "";
         String pointBackgroundColor = "";
-        int total = -1;
-        int correct = 0;
         long lastTime = 0;
         String prediction = "";
-        double gain = 0;
         for (HistoricalData hd : LocalDataListen.last500) {
-            if (!hd.virtualPrediction.equals("OUT")) {
-                total++;
-                if (hd.correct) correct++;
-            }
             labels += "\"" + DateFormat.getDateTimeInstance(
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",";
             data += "{x:\"" + DateFormat.getDateTimeInstance(
@@ -48,9 +41,6 @@ public class SampleController {
                 pointBackgroundColor += "\"#aaaaaa\",";
             else pointBackgroundColor += hd.isCorrect() ? "\"#00ff00\"," : "\"#ff0000\",";
             if (!(hd.virtualPrediction.equals("OUT") || !hd.hasNext())) {
-                double tempGain = 1000.0 * Math.abs(hd.nextPrice - hd.currentPrice);
-                if (hd.isCorrect()) gain += tempGain;
-                else gain = -tempGain;
             }
             lastTime = hd.timestamp;
             prediction = hd.virtualPrediction;
@@ -121,12 +111,12 @@ public class SampleController {
 //        content += "<div>" + correct + "/" + total + " correct</div>";
 
         int percent = 0;
-        if (total > 0) percent = (int) ((correct * 100) / total);
+        if (HistoricalData.cumulativeCounter > 0) percent = (int) ((HistoricalData.cumulativeSuccess * 100) / HistoricalData.cumulativeCounter);
         String colorCorrect = "red";
         if (percent> 50) colorCorrect = "green";
         String colorGain = "red";
-        if (gain > 0) colorGain = "green";
-        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:"+colorCorrect+";\">" + percent + "% Correct!</span><br/>Gain/Loss: <span style=\"color:" + colorGain + ";\">" + formatter.format(gain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
+        if (HistoricalData.cumulativeGain > 0) colorGain = "green";
+        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:"+colorCorrect+";\">" + percent + "% Correct!</span><br/>Gain/Loss: <span style=\"color:" + colorGain + ";\">" + formatter.format(HistoricalData.cumulativeGain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
 
 
         content += "</body></html>";
