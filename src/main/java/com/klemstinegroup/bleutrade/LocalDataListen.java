@@ -58,7 +58,8 @@ public class LocalDataListen {
                 }
             }
         }
-        for (HistoricalData hd:last500){
+        for (int i=0;i<last500.size()-2;i++){
+            HistoricalData hd=last500.get(i);
             boolean correct=false;
             if (hd.virtualPrediction.equals("OUT")) correct = false;
             else {
