@@ -39,7 +39,7 @@ public class LocalDataListen {
     int dataSizeLimit = 500;
     static DecimalFormat dfcoins = new DecimalFormat("+0000.00000000;-0000.00000000");
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    public static int histdatasize = 201;
+    public static int histdatasize = Integer.MAX_VALUE;
     public static ArrayList<HistoricalData> last500 = new ArrayList<HistoricalData>();
 
     static {
@@ -56,6 +56,19 @@ public class LocalDataListen {
                         e1.printStackTrace();
                     }
                 }
+            }
+        }
+        for (HistoricalData hd:last500){
+            boolean correct=false;
+            if (hd.virtualPrediction.equals("OUT")) correct = false;
+            else {
+                if (hd.virtualPrediction.equals("UP") && hd.currentPrice < hd.nextPrice) correct = true;
+                else if (hd.virtualPrediction.equals("DOWN") && hd.currentPrice > hd.nextPrice) correct = true;
+                HistoricalData.cumulativeCounter++;
+                if (correct) {
+                    HistoricalData.cumulativeGain += 1000 * Math.abs(hd.currentPrice - hd.nextPrice);
+                    HistoricalData.cumulativeSuccess++;
+                } else HistoricalData.cumulativeGain -= 1000 * Math.abs(hd.currentPrice - hd.nextPrice);
             }
         }
 //        else {

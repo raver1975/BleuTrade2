@@ -9,6 +9,8 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 @Controller
@@ -19,7 +21,7 @@ public class SampleController {
     @ResponseBody
     String api() {
         HistoricalData hd = LocalDataListen.last500.get(LocalDataListen.last500.size() - 1);
-        return "{\"expires\":" + (hd.timestamp + DataCollector.timeout * 1000) + ", \"time\":\"" + hd.timestamp + "\", \"prediction\":" + hd.virtualPrediction + ", \"currentPrice\":\"" + hd.currentPrice + "\" }";
+        return "{\"expires\":" + (hd.timestamp + DataCollector.timeout * 1000) + ", \"time\":" + hd.timestamp + ", \"prediction\":\"" + hd.virtualPrediction + "\", \"currentPrice\":" + hd.currentPrice + " }";
     }
 
     @RequestMapping("/")
@@ -32,12 +34,18 @@ public class SampleController {
         String pointBackgroundColor = "";
         long lastTime = 0;
         String prediction = "";
-        for (HistoricalData hd : LocalDataListen.last500) {
+        ArrayList<HistoricalData> lastAll = new ArrayList<>();
+
+        for (int i = LocalDataListen.last500.size() - 1; i >= 0 && i > lastAll.size() - 200; i--) {
+            lastAll.add(LocalDataListen.last500.get(i));
+        }
+        Collections.reverse(lastAll);
+        for (HistoricalData hd : lastAll) {
             labels += "\"" + DateFormat.getDateTimeInstance(
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",";
             data += "{x:\"" + DateFormat.getDateTimeInstance(
                     DateFormat.SHORT, DateFormat.MEDIUM).format(hd.timestamp) + "\",y:" + hd.currentPrice + "},";
-            if (hd.virtualPrediction.equals("OUT") || hd.equals(LocalDataListen.last500.get(LocalDataListen.last500.size() - 1)))
+            if (hd.virtualPrediction.equals("OUT") || hd.equals(lastAll.get(lastAll.size() - 1)))
                 pointBackgroundColor += "\"#aaaaaa\",";
             else pointBackgroundColor += hd.isCorrect() ? "\"#00ff00\"," : "\"#ff0000\",";
             if (!(hd.virtualPrediction.equals("OUT") || !hd.hasNext())) {
@@ -97,6 +105,7 @@ public class SampleController {
         content += "<div style=\" margin:0 auto;max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script>";
 
         content += "<div style=\"text-align:center;width:100%\">A population of algorithms evolve every timestep to predict future commodity prices. The weak are punished while the strong reproduce.<br/>Every 20 minutes 15,0000 robots try to predict if the price will increase or decrease.<br/>Gain/loss is the sum of successfully predicted price movements minus the sum of the failed price predictions, times one thousand just for fun.<br/></div>";
+        content += "<div style=\"text-align:center;width:100%\"><a href=\"/api\">http://help5.org/api</a></div>";
         content += "<div style=\"text-align:center;width:100%\"><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
         content += "<div style=\"text-align:center;width:100%\"><a href=\"mailto:paulklemstine@gmail.com\">&copy;2017 Paul Klemstine</a></div>";
         content += "<div style=\"text-align:center;width:100%\">Donate Ethereum: 0x0f209f410548D17E8760D39fb84E7B8dd2e002BC</div></div>";
@@ -111,12 +120,13 @@ public class SampleController {
 //        content += "<div>" + correct + "/" + total + " correct</div>";
 
         int percent = 0;
-        if (HistoricalData.cumulativeCounter > 0) percent = (int) ((HistoricalData.cumulativeSuccess * 100) / HistoricalData.cumulativeCounter);
+        if (HistoricalData.cumulativeCounter > 0)
+            percent = (int) ((HistoricalData.cumulativeSuccess * 100) / HistoricalData.cumulativeCounter);
         String colorCorrect = "red";
-        if (percent> 50) colorCorrect = "green";
+        if (percent > 50) colorCorrect = "green";
         String colorGain = "red";
         if (HistoricalData.cumulativeGain > 0) colorGain = "green";
-        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:"+colorCorrect+";\">" + percent + "% Correct!</span><br/>Gain/Loss: <span style=\"color:" + colorGain + ";\">" + formatter.format(HistoricalData.cumulativeGain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
+        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:" + colorCorrect + ";\">" + percent + "% Correct!</span><br/>Gain/Loss: <span style=\"color:" + colorGain + ";\">" + formatter.format(HistoricalData.cumulativeGain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
 
 
         content += "</body></html>";
