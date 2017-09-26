@@ -104,7 +104,7 @@ public class SampleController {
 
         content += "<div style=\" margin:0 auto;max-height:90%;width:95%;height:90%;\"><canvas id=\"myChart\"></canvas><script type=\"text/javascript\">var ctx = document.getElementById(\"myChart\");" + chart + "</script>";
 
-        content += "<div style=\"text-align:center;width:100%\">A population of algorithms evolve every timestep to predict future commodity prices. The weak are punished while the strong reproduce.<br/>Every hour 15,0000 robots try to predict if the price will increase or decrease.<br/>Gain/loss is the sum of successfully predicted price movements minus the sum of the failed price predictions, times one thousand just for fun.<br/></div>";
+        content += "<div style=\"text-align:center;width:100%\">A population of algorithms evolve every timestep to predict future commodity prices. The weak are punished while the strong reproduce.<br/>Every hour, 15,0000 robots try to predict if the price will increase or decrease.<br/>Gain/loss is the sum of successfully predicted price movements minus the sum of the failed price predictions, times one thousand just for fun.<br/></div>";
         content += "<div style=\"text-align:center;width:100%\"><a href=\"/api\">http://help5.org/api</a></div>";
         content += "<div style=\"text-align:center;width:100%\"><a href=\"http://github.com/raver1975/bleutrade2\">GitHub</a></div>";
         content += "<div style=\"text-align:center;width:100%\"><a href=\"mailto:paulklemstine@gmail.com\">&copy;2017 Paul Klemstine</a></div>";
