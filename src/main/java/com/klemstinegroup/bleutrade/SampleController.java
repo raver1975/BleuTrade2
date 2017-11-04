@@ -6,6 +6,7 @@ import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -66,20 +67,71 @@ public class SampleController {
                 TimeUnit.MILLISECONDS.toSeconds(millis) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
         );
+        String data1="";
+        String pointBackgroundColor1="";
+        double endgain=HistoricalData.cumulativeGain;
+        Collections.reverse(lastAll);
+        int cnt=0;
+        ArrayList<Double> al=new ArrayList<>();
+        for (HistoricalData hd:lastAll) {
+            if (hd.hasNext() && !hd.virtualPrediction.equals("OUT")) {
+                if (hd.isCorrect()) endgain -= 1000 * Math.abs(hd.nextPrice - hd.currentPrice);
+                else endgain += 1000 * Math.abs(hd.nextPrice - hd.currentPrice);
+            }
+            al.add(endgain);
+        }
+        Collections.reverse(al);
+        for (double endgain1:al){
+            data1 += "{x:\"" + (cnt++) + "\",y:" +new BigDecimal(endgain1).toPlainString()+ "},";
+            pointBackgroundColor1+= "\"#bb44bb\",";
+        }
+        if (data1.length() > 0) data1 = data1.substring(0, data1.length() - 1);
+        if (pointBackgroundColor1.length() > 0) pointBackgroundColor1= pointBackgroundColor1.substring(0, pointBackgroundColor1.length() - 1);
         String chart = "new Chart(document.getElementById(\"myChart\"), {\n" +
                 "  type: 'line',\n" +
                 "  data: {\n" +
                 "    labels: [" + labels + "],\n" +
-                "    datasets: [{ \n" +
+                "    datasets: " +
+                "[{ \n" +
                 "        label: \"currentPrice\",\n" +
+                "        yAxisID: 'A',\n"+
                 "        data: [" + data + "],\n" +
                 "        pointBackgroundColor: [" + pointBackgroundColor + "],\n" +
-                "        borderColor: \"#3e95cd\",\n" +
+                "        borderColor: \"#333333\",\n" +
                 "        fill: false\n" +
                 "      }\n" +
-                "    ]\n" +
+                "," +
+                "{ \n" +
+                "        label: \"gain/loss\",\n" +
+                "        yAxisID: 'B',\n"+
+                "        data: [" + data1 + "],\n" +
+                "        pointBackgroundColor: [" + pointBackgroundColor1 + "],\n" +
+                "        borderColor: \"#cc33cc\",\n" +
+                "        fill: false\n" +
+                "      }\n" +
+                "    ]" + "\n" +
                 "  },\n" +
                 "  options: {\n" +
+                "scales: {\n" +
+                "      yAxes: [{\n" +
+                " scaleLabel: {\n" +
+                "        display: true,\n" +
+                "        labelString: 'coin price'\n" +
+                "      },"+
+                "        id: 'A',\n" +
+                "        type: 'linear',\n" +
+                "        position: 'left',\n" +
+                "      }, {\n" +
+                " scaleLabel: {\n" +
+                "        display: true,\n" +
+                "        labelString: 'gain/loss'\n" +
+                "      },"+
+                "        id: 'B',\n" +
+                "gridLines: { display: false },"+
+                "        type: 'linear',\n" +
+                "        position: 'right',\n" +
+                "      }]\n" +
+                "    },"+
                 " legend: {\n" +
                 "        display: false\n" +
                 "    }," +
@@ -126,7 +178,7 @@ public class SampleController {
         if (percent > 50) colorCorrect = "green";
         String colorGain = "red";
         if (HistoricalData.cumulativeGain > 0) colorGain = "green";
-        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:" + colorCorrect + ";\">" + percent + "% Correct!</span><br/>Gain/Loss: <span style=\"color:" + colorGain + ";\">" + formatter.format(HistoricalData.cumulativeGain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
+        content += "<div style=\"z-index: 1; position: absolute; top: 160px; left: 150px; height:250px; width:500px;\"><h3><span style=\"color:" + colorCorrect + ";\">" + percent + "% Correct!</span><br/><span style=\"color:#cc33cc\">Gain/Loss: </span><span style=\"color:" + colorGain + ";\">" + formatter.format(HistoricalData.cumulativeGain) + "</span><br/>Current prediction: <span style=\"color:red;\">" + prediction + "</span><br/>Next in " + timeLeft + "</h3></div>";
 
 
         content += "</body></html>";
